@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # local agent tooling
 .atl/
+
+# Local Netlify folder
+.netlify
