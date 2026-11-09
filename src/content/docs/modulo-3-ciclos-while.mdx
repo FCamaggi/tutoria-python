@@ -1,0 +1,176 @@
+---
+title: 'Módulo 3: Ciclos indefinidos (while)'
+description: Repetir mientras se cumpla una condición.
+---
+
+import PythonRunner from '../../components/PythonRunner.astro';
+import Quiz from '../../components/Quiz.astro';
+import PythonTutor from '../../components/PythonTutor.astro';
+
+El `while` se usa cuando **no sabemos cuántas vueltas** va a dar el ciclo: repite mientras la condición sea `True`.
+
+## La condición se vuelve a evaluar en cada vuelta
+
+<PythonTutor code={`
+n = 3
+while n > 0:
+    print(n)
+    n = n - 1
+print("Despegue")
+`} />
+
+Fíjate que después de cada vuelta Python **vuelve a la línea del `while`** y revisa la condición otra vez.
+
+## El ciclo infinito
+
+Si nada dentro del ciclo cambia la condición, nunca termina. Prueba este código: la página no se congela, el programa se corta a los 3 segundos.
+
+<PythonRunner
+	id="mod3-demo-infinito"
+	initialCode={`n = 3
+while n > 0:
+    print(n)
+    # Falta: n = n - 1`}
+/>
+
+## Ejercicio: suma hasta el cero
+
+Lee números enteros, uno por línea, **hasta que llegue un `0`**. Imprime la suma de los números leídos (el 0 no cambia la suma).
+
+<PythonRunner
+	id="mod3-ej1-suma-hasta-cero"
+	defaultInputs={`5
+3
+0`}
+	initialCode={`suma = 0
+numero = int(input())
+
+# Tu while aquí
+
+print(suma)`}
+	tests={[
+		{ inputs: '5\n3\n0', expected: '8' },
+		{ inputs: '0', expected: '0' },
+		{ inputs: '10\n-4\n2\n0', expected: '8' },
+	]}
+	hint="Condición: while numero != 0. Dentro: suma el número y luego lee el siguiente con input(). Si olvidas leer, es un ciclo infinito."
+/>
+
+## Cazabobos: ¿qué imprime?
+
+Piensa tu respuesta **antes** de hacer clic.
+
+<Quiz
+	code={`n = 3
+while n >= 0:
+    print(n)
+    n -= 1`}
+	options={[
+		{ text: '3\n2\n1', explanation: 'Eso pasaría con n > 0. Con >=, cuando n vale 0 la condición sigue siendo verdadera y se da una vuelta más.' },
+		{ text: '3\n2\n1\n0', correct: true, explanation: '0 >= 0 es True, así que también se imprime el 0. El ciclo termina recién cuando n vale -1.' },
+		{ text: '2\n1\n0', explanation: 'El print va ANTES de restar, así que el primer valor que se imprime es 3.' },
+	]}
+/>
+
+<Quiz
+	code={`x = 10
+while x < 5:
+    print("hola")
+print("fin")`}
+	options={[
+		{ text: 'hola\nfin', explanation: 'El while revisa la condición ANTES de la primera vuelta. 10 < 5 es falso desde el principio.' },
+		{ text: 'Ciclo infinito', explanation: 'Sería infinito si llegara a entrar, porque x nunca cambia. Pero la condición es falsa desde el inicio y nunca entra.' },
+		{ text: 'fin', correct: true, explanation: 'Si la condición parte siendo falsa, el cuerpo del while no se ejecuta ni una vez.' },
+	]}
+/>
+
+<Quiz
+	code={`i = 0
+while i < 5:
+    i += 2
+print(i)`}
+	options={[
+		{ text: '4', explanation: 'Con i = 4, la condición 4 < 5 sigue siendo cierta y se suma 2 otra vez.' },
+		{ text: '5', explanation: 'i va de 2 en 2 (0, 2, 4, 6) y nunca vale 5. El while no frena "justo en" el límite.' },
+		{ text: '6', correct: true, explanation: 'Valores: 0 → 2 → 4 → 6. Recién con 6 la condición 6 < 5 es falsa. Al salir, la variable ya pasó el límite.' },
+	]}
+/>
+
+<Quiz
+	question="¿Qué pasa al ejecutarlo?"
+	code={`n = 5
+while n > 0:
+    print(n)
+    n - 1`}
+	options={[
+		{ text: '5\n4\n3\n2\n1', explanation: 'n - 1 calcula 4, pero no lo guarda. n sigue valiendo 5 para siempre.' },
+		{ text: 'Imprime 5 sin parar (ciclo infinito)', correct: true, explanation: 'n - 1 no cambia n; hace falta n = n - 1 (o n -= 1). Como la condición nunca cambia, el ciclo no termina.' },
+		{ text: 'Error', explanation: 'n - 1 suelto es válido: se calcula y se descarta. Por eso es tan fácil no verlo.' },
+	]}
+/>
+
+<Quiz
+	code={`n = 1
+while n <= 3:
+    n += 1
+    print(n)`}
+	options={[
+		{ text: '1\n2\n3', explanation: 'El print va DESPUÉS del n += 1, así que el primer valor impreso ya es 2.' },
+		{ text: '2\n3\n4', correct: true, explanation: 'Se suma antes de imprimir. En la última vuelta n vale 3, cumple n <= 3, pasa a 4 y se imprime 4.' },
+		{ text: '2\n3', explanation: 'Con n = 3, la condición 3 <= 3 es verdadera: hay una vuelta más, que imprime 4.' },
+	]}
+/>
+
+## Ejercicio: suma de dígitos
+
+Lee un entero `n ≥ 0` e imprime la suma de sus dígitos (`1234 → 10`). Hazlo **con aritmética**, sin convertir a texto.
+
+<PythonRunner
+	id="mod3-ej2-digitos"
+	defaultInputs="1234"
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '1234', expected: '10' },
+		{ inputs: '9', expected: '9' },
+		{ inputs: '0', expected: '0' },
+		{ inputs: '1005', expected: '6' },
+	]}
+	hint="n % 10 te da el último dígito y n // 10 lo quita. Repite mientras n > 0."
+/>
+
+## Ejercicio: validar la entrada
+
+Pide una edad hasta que sea válida (entre 0 y 120, ambos incluidos). Por cada edad inválida imprime `Edad inválida`. Al final imprime `Edad registrada: X`.
+
+<PythonRunner
+	id="mod3-ej3-validar"
+	defaultInputs={`-5
+150
+30`}
+	initialCode={`edad = int(input())
+`}
+	tests={[
+		{ inputs: '-5\n150\n30', expected: 'Edad inválida\nEdad inválida\nEdad registrada: 30' },
+		{ inputs: '0', expected: 'Edad registrada: 0' },
+		{ inputs: '121\n120', expected: 'Edad inválida\nEdad registrada: 120' },
+	]}
+	hint="La condición del while describe cuándo seguir pidiendo: edad < 0 or edad > 120."
+/>
+
+## Ejercicio: invertir un número
+
+Lee un entero `n > 0` e imprime sus dígitos al revés **como número**. Por ejemplo, `123 → 321` y `1200 → 21` (los ceros a la izquierda desaparecen).
+
+<PythonRunner
+	id="mod3-ej4-invertir"
+	defaultInputs="123"
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '123', expected: '321' },
+		{ inputs: '1200', expected: '21' },
+		{ inputs: '5', expected: '5' },
+	]}
+	hint="Construye el resultado con invertido = invertido * 10 + n % 10, y quita el último dígito con n //= 10."
+/>

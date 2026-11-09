@@ -1,0 +1,53 @@
+---
+/** Embeds a Python Tutor step-by-step visualization for the given code. */
+interface Props {
+  code: string;
+  height?: string;
+}
+
+const { code, height } = Astro.props;
+
+// The embed is too narrow for side-by-side, so Python Tutor stacks the memory
+// panel below the code. Estimate the stacked height from the code itself:
+// fixed chrome (controls, output box, floating toolbar) + code lines + variables.
+const lines = code.trim().split('\n').length;
+const names = new Set([
+  ...[...code.matchAll(/^\s*([A-Za-z_]\w*)\s*[-+*/%]?=(?!=)/gm)].map((m) => m[1]),
+  ...[...code.matchAll(/\bfor\s+([A-Za-z_]\w*)\s+in\b/g)].map((m) => m[1]),
+]);
+const autoHeight = 420 + lines * 22 + names.size * 28;
+const frameHeight = height ?? `${autoHeight}px`;
+
+const params = new URLSearchParams({
+  code: code.trim(),
+  codeDivHeight: '400',
+  codeDivWidth: '350',
+  cumulative: 'false',
+  curInstr: '0',
+  heapPrimitives: 'nevernest',
+  origin: 'opt-frontend.js',
+  py: '3',
+  rawInputLstJSON: '[]',
+  textReferences: 'false',
+});
+const src = `https://pythontutor.com/iframe-embed.html#${params.toString().replace(/\+/g, '%20')}`;
+---
+
+<div class="py-tutor not-content">
+  <iframe title="Visualización paso a paso con Python Tutor" src={src} height={frameHeight} loading="lazy"></iframe>
+</div>
+
+<style>
+  .py-tutor {
+    margin: 1.5rem 0;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: white;
+  }
+  .py-tutor iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+  }
+</style>

@@ -1,0 +1,75 @@
+---
+title: 'Módulo 4: Simulacro de prueba'
+description: Ejercicios tipo prueba que combinan condicionales y ciclos.
+---
+
+import PythonRunner from '../../components/PythonRunner.astro';
+
+Resuelve sin mirar las pistas primero. La salida debe ser **exacta**: mismas palabras, mayúsculas y espacios.
+
+## Pregunta 1: promedio del curso
+
+Lee un entero `n` y luego `n` notas (una por línea, con decimales). Imprime:
+
+```
+Promedio: 4.8
+Aprobados: 2
+```
+
+El promedio va con **un decimal**. Se aprueba con nota mayor o igual a 4.0.
+
+<PythonRunner
+	id="mod4-ej1-promedio"
+	defaultInputs={`3
+5.0
+3.5
+6.0`}
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '3\n5.0\n3.5\n6.0', expected: 'Promedio: 4.8\nAprobados: 2' },
+		{ inputs: '1\n3.9', expected: 'Promedio: 3.9\nAprobados: 0' },
+		{ inputs: '4\n4.0\n4.0\n7.0\n1.0', expected: 'Promedio: 4.0\nAprobados: 3' },
+	]}
+	hint="Usa un acumulador para la suma y un contador para los aprobados. Para un decimal: f'{promedio:.1f}'"
+/>
+
+## Pregunta 2: adivina el número
+
+El número secreto es `7`. Lee intentos hasta que el usuario acierte. Por cada intento incorrecto imprime `Mayor` (si el secreto es mayor) o `Menor`. Al acertar imprime `Adivinaste en N intentos`.
+
+<PythonRunner
+	id="mod4-ej2-adivina"
+	defaultInputs={`3
+9
+7`}
+	initialCode={`secreto = 7
+`}
+	tests={[
+		{ inputs: '3\n9\n7', expected: 'Mayor\nMenor\nAdivinaste en 3 intentos' },
+		{ inputs: '7', expected: 'Adivinaste en 1 intentos' },
+		{ inputs: '1\n2\n10\n7', expected: 'Mayor\nMayor\nMenor\nAdivinaste en 4 intentos' },
+	]}
+	hint="Lee el primer intento antes del while. La condición es intento != secreto, y el contador parte en 1."
+/>
+
+## Pregunta 3: conjetura de Collatz
+
+Lee `n ≥ 1`. Mientras `n` no sea 1: si es par, divídelo por 2; si es impar, cámbialo por `3n + 1`. Imprime cuántos pasos tomó llegar a 1:
+
+```
+Pasos: 8
+```
+
+<PythonRunner
+	id="mod4-ej3-collatz"
+	defaultInputs="6"
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '6', expected: 'Pasos: 8' },
+		{ inputs: '1', expected: 'Pasos: 0' },
+		{ inputs: '7', expected: 'Pasos: 16' },
+	]}
+	hint="while n != 1, con un if/else adentro. Usa // al dividir, o n pasará a ser float (3.0)."
+/>

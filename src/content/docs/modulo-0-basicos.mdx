@@ -1,0 +1,148 @@
+---
+title: 'Módulo 0: Nivelación express'
+description: Variables, tipos, input() y print().
+---
+
+import PythonRunner from '../../components/PythonRunner.astro';
+import Quiz from '../../components/Quiz.astro';
+
+## Variables y tipos
+
+Una variable es un nombre que apunta a un valor. Los tipos que más vas a usar:
+
+| Tipo    | Ejemplo        | Para qué sirve          |
+| ------- | -------------- | ----------------------- |
+| `int`   | `edad = 20`    | Números enteros         |
+| `float` | `nota = 5.5`   | Números con decimales   |
+| `str`   | `nombre = "Ana"` | Texto                 |
+| `bool`  | `aprobado = True` | Verdadero o falso    |
+
+## La trampa de `input()`
+
+`input()` **siempre devuelve un `str`**. Si necesitas un número, conviértelo:
+
+```python
+edad = input()       # "20" (texto)
+edad = int(input())  # 20 (número)
+```
+
+Si sumas sin convertir, `"20" + 1` lanza un `TypeError`.
+
+## Ejercicio: saludo con edad
+
+Lee un nombre y una edad (en ese orden) e imprime exactamente:
+
+```
+Hola Ana, el próximo año tendrás 21
+```
+
+<PythonRunner
+	id="mod0-ej1-saludo"
+	defaultInputs={`Ana
+20`}
+	initialCode={`nombre = input()
+edad = input()
+
+# Imprime el saludo aquí
+`}
+	tests={[
+		{ inputs: 'Ana\n20', expected: 'Hola Ana, el próximo año tendrás 21' },
+		{ inputs: 'Luis\n17', expected: 'Hola Luis, el próximo año tendrás 18' },
+	]}
+	hint="Convierte la edad con int() antes de sumarle 1. Puedes usar un f-string: f'Hola {nombre}, ...'"
+/>
+
+## Cazabobos: ¿qué imprime?
+
+Piensa tu respuesta **antes** de hacer clic. Puedes probar todas las alternativas para leer por qué cada una está bien o mal.
+
+<Quiz
+	question="El usuario escribe 5 y luego 3. ¿Qué imprime?"
+	code={`a = input()
+b = input()
+print(a + b)`}
+	options={[
+		{ text: '8', explanation: 'Eso pasaría si a y b fueran números, pero input() siempre devuelve texto: a es "5" y b es "3".' },
+		{ text: '53', correct: true, explanation: 'input() devuelve texto, y con texto + concatena (pega uno al lado del otro). Para sumar hay que convertir: int(input()).' },
+		{ text: 'Error', explanation: 'Sumar texto con texto es válido (concatena). El error aparecería si mezclaras tipos, como "5" + 3.' },
+	]}
+/>
+
+<Quiz
+	code={`print(7 / 2, 7 // 2, 7 % 2)`}
+	options={[
+		{ text: '3.5 3 1', correct: true, explanation: '/ es la división normal y siempre da float. // es la división entera (descarta los decimales). % es el resto: 7 = 2·3 + 1.' },
+		{ text: '3 3 1', explanation: 'En Python 3, / siempre devuelve float, aunque los dos números sean enteros. 7 / 2 es 3.5.' },
+		{ text: '3.5 3.5 1', explanation: '// no es una división "normal": es la división entera, y descarta la parte decimal. 7 // 2 es 3.' },
+		{ text: '3.5 3 0.5', explanation: '% no es la parte decimal: es el RESTO de la división entera. 7 dividido en 2 da 3 y sobra 1.' },
+	]}
+/>
+
+<Quiz
+	code={`edad = int("17.5")
+print(edad + 1)`}
+	options={[
+		{ text: '18.5', explanation: 'int() nunca devuelve decimales. Y en este caso ni siquiera llega a convertir: el texto tiene un punto.' },
+		{ text: '18', explanation: 'int(17.5), con un float, sí funciona y da 17. Pero int("17.5"), con un texto, falla: int() solo acepta texto con un entero.' },
+		{ text: 'Error (ValueError)', correct: true, explanation: 'int() no sabe leer texto con decimales. Hay que usar float("17.5"), o int(float("17.5")) si quieres el entero.' },
+	]}
+/>
+
+<Quiz
+	code={`print(2 + 3 * 4 ** 2)`}
+	options={[
+		{ text: '400', explanation: 'Eso es leer de izquierda a derecha: (2 + 3) · 4 = 20 y 20² = 400. Python respeta la precedencia de operadores, igual que en matemáticas.' },
+		{ text: '146', explanation: 'Calculaste (3 · 4)² = 144. Pero la potencia va antes que la multiplicación: primero 4 ** 2 = 16.' },
+		{ text: '50', correct: true, explanation: 'Primero la potencia (4 ** 2 = 16), después la multiplicación (3 · 16 = 48) y al final la suma (2 + 48 = 50).' },
+	]}
+/>
+
+<Quiz
+	code={`x = 10
+x + 5
+print(x)`}
+	options={[
+		{ text: '15', explanation: 'x + 5 calcula 15, pero ese resultado no se guarda en ninguna parte. Para cambiar x hay que asignarlo: x = x + 5 (o x += 5).' },
+		{ text: '10', correct: true, explanation: 'Una expresión suelta se calcula y se descarta. Solo el = cambia el valor de una variable.' },
+		{ text: 'Error', explanation: 'Escribir una expresión sola en una línea es válido en Python: se evalúa y se descarta. No hay error, solo un resultado que no se usa.' },
+	]}
+/>
+
+## Ejercicio: suma de dos números
+
+Lee dos números enteros e imprime su suma.
+
+<PythonRunner
+	id="mod0-ej2-suma"
+	defaultInputs={`5
+3`}
+	initialCode={`a = input()
+b = input()
+print(a + b)`}
+	tests={[
+		{ inputs: '5\n3', expected: '8' },
+		{ inputs: '-2\n10', expected: '8' },
+	]}
+	hint="Ejecuta el código tal como está: imprime 53. ¿Por qué? Porque input() devuelve texto."
+/>
+
+## Ejercicio: horas y minutos
+
+Lee una cantidad total de minutos e imprime cuántas horas y minutos son, con este formato exacto:
+
+```
+2 horas y 15 minutos
+```
+
+<PythonRunner
+	id="mod0-ej3-horas"
+	defaultInputs="135"
+	initialCode={`total = int(input())
+`}
+	tests={[
+		{ inputs: '135', expected: '2 horas y 15 minutos' },
+		{ inputs: '59', expected: '0 horas y 59 minutos' },
+		{ inputs: '120', expected: '2 horas y 0 minutos' },
+	]}
+	hint="Las horas son total // 60 y los minutos que sobran son total % 60. Si usas /, obtienes 2.25."
+/>

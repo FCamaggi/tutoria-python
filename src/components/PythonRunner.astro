@@ -1,0 +1,345 @@
+---
+/**
+ * Interactive Python exercise backed by Pyodide in a Web Worker.
+ *
+ * Grading options (both optional, can be combined):
+ * - tests: list of { inputs, expected } cases; the student's printed output
+ *   (input() prompts are not echoed while grading) must equal `expected`.
+ * - testCode: Python asserts run after the student's code, in the same
+ *   namespace, with the default inputs. `_stdout` holds the printed output.
+ */
+interface TestCase {
+  inputs?: string;
+  expected: string;
+}
+
+interface Props {
+  id: string;
+  initialCode: string;
+  tests?: TestCase[];
+  testCode?: string;
+  defaultInputs?: string;
+  hint?: string;
+  timeoutMs?: number;
+}
+
+const {
+  id,
+  initialCode,
+  tests = [],
+  testCode = '',
+  defaultInputs = '',
+  hint = '',
+  timeoutMs = 3000,
+} = Astro.props;
+
+const code = initialCode.trim();
+const rows = Math.max(5, code.split('\n').length + 1);
+const graded = tests.length > 0 || testCode.trim() !== '';
+---
+
+<div
+  class="py-playground not-content"
+  data-id={id}
+  data-initial={code}
+  data-tests={JSON.stringify(tests)}
+  data-test-code={testCode.trim()}
+  data-timeout={timeoutMs}
+>
+  <div class="py-header">
+    <span class="py-badge">Python 3 · en el navegador</span>
+    <span class="py-status">{graded ? 'Pendiente' : 'Práctica libre'}</span>
+  </div>
+
+  <textarea class="py-editor" rows={rows} spellcheck="false" aria-label="Editor de código">{code}</textarea>
+
+  <label class="py-inputs-box">
+    <span>Entradas para <code>input()</code> — un valor por línea:</span>
+    <textarea class="py-inputs" rows="2" spellcheck="false">{defaultInputs.trim()}</textarea>
+  </label>
+
+  <div class="py-actions">
+    <button type="button" class="py-btn py-run">▶ {graded ? 'Ejecutar y evaluar' : 'Ejecutar'}</button>
+    <button type="button" class="py-btn py-reset">↺ Reiniciar código</button>
+    {hint && (
+      <details class="py-hint">
+        <summary>💡 Ver pista</summary>
+        <p>{hint}</p>
+      </details>
+    )}
+  </div>
+
+  <pre class="py-output">La salida de tu código aparecerá aquí...</pre>
+</div>
+
+<script>
+  type RunRequest = { code: string; inputs: string[]; echo: boolean; check?: string };
+  type RunResult = { output: string; error: string | null; timedOut?: boolean };
+
+  // One shared worker per page; replaced when a run times out.
+  let worker: Worker | null = null;
+  let nextId = 0;
+
+  function getWorker(): Worker {
+    if (!worker) worker = new Worker('/pyodide-worker.js');
+    return worker;
+  }
+
+  function runPython(req: RunRequest, timeoutMs: number): Promise<RunResult> {
+    const w = getWorker();
+    const id = ++nextId;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        w.removeEventListener('message', onMessage);
+        w.terminate();
+        worker = null;
+        resolve({ output: '', error: null, timedOut: true });
+      }, timeoutMs);
+
+      function onMessage(e: MessageEvent) {
+        if (e.data.id !== id) return;
+        clearTimeout(timer);
+        w.removeEventListener('message', onMessage);
+        resolve(e.data);
+      }
+
+      w.addEventListener('message', onMessage);
+      w.postMessage({ id, ...req });
+    });
+  }
+
+  // First run includes downloading Pyodide, so allow extra time for it.
+  let warmedUp = false;
+  const WARMUP_MS = 60000;
+
+  const splitInputs = (text: string) => (text === '' ? [] : text.replace(/\r/g, '').split('\n'));
+  const normalize = (text: string) =>
+    text.replace(/\r/g, '').split('\n').map((l) => l.trimEnd()).join('\n').trim();
+
+  const storage = {
+    get(key: string) {
+      try { return localStorage.getItem(key); } catch { return null; }
+    },
+    set(key: string, value: string) {
+      try { localStorage.setItem(key, value); } catch { /* storage unavailable */ }
+    },
+    remove(key: string) {
+      try { localStorage.removeItem(key); } catch { /* storage unavailable */ }
+    },
+  };
+
+  document.querySelectorAll<HTMLElement>('.py-playground').forEach((box) => {
+    const id = box.dataset.id!;
+    const initialCode = box.dataset.initial ?? '';
+    const tests: { inputs?: string; expected: string }[] = JSON.parse(box.dataset.tests || '[]');
+    const testCode = box.dataset.testCode ?? '';
+    const timeoutMs = Number(box.dataset.timeout) || 3000;
+    const graded = tests.length > 0 || testCode !== '';
+
+    const editor = box.querySelector<HTMLTextAreaElement>('.py-editor')!;
+    const inputsEl = box.querySelector<HTMLTextAreaElement>('.py-inputs')!;
+    const runBtn = box.querySelector<HTMLButtonElement>('.py-run')!;
+    const resetBtn = box.querySelector<HTMLButtonElement>('.py-reset')!;
+    const outputEl = box.querySelector<HTMLPreElement>('.py-output')!;
+    const statusEl = box.querySelector<HTMLSpanElement>('.py-status')!;
+
+    const codeKey = `py_code_${id}`;
+    const solvedKey = `py_solved_${id}`;
+
+    const markSolved = () => {
+      statusEl.textContent = '✅ Completado';
+      statusEl.classList.add('solved');
+    };
+
+    const saved = storage.get(codeKey);
+    if (saved !== null) editor.value = saved;
+    if (storage.get(solvedKey) === 'true') markSolved();
+
+    editor.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || e.shiftKey) return;
+      e.preventDefault();
+      const { selectionStart: start, selectionEnd: end } = editor;
+      editor.setRangeText('    ', start, end, 'end');
+      storage.set(codeKey, editor.value);
+    });
+
+    editor.addEventListener('input', () => storage.set(codeKey, editor.value));
+
+    resetBtn.addEventListener('click', () => {
+      editor.value = initialCode;
+      storage.remove(codeKey);
+      outputEl.textContent = 'Código reiniciado.';
+    });
+
+    const limit = () => (warmedUp ? timeoutMs : WARMUP_MS);
+    const timeoutMsg = () =>
+      `⏱️ Tu programa tardó más de ${timeoutMs / 1000} s. ¿Hay un ciclo infinito? ` +
+      'Revisa que la condición del while llegue a ser False.';
+
+    runBtn.addEventListener('click', async () => {
+      runBtn.disabled = true;
+      outputEl.textContent = warmedUp ? '⏳ Ejecutando...' : '⏳ Cargando Python (solo la primera vez)...';
+
+      try {
+        const code = editor.value;
+        const free = await runPython(
+          { code, inputs: splitInputs(inputsEl.value), echo: true },
+          limit(),
+        );
+        warmedUp = true;
+
+        if (free.timedOut) {
+          outputEl.textContent = timeoutMsg();
+          return;
+        }
+
+        let text = free.output.trimEnd() || '(El programa terminó sin imprimir nada)';
+        if (free.error) {
+          outputEl.textContent = `${text}\n\n❌ Error:\n${free.error}`;
+          return;
+        }
+        if (!graded) {
+          outputEl.textContent = text;
+          return;
+        }
+
+        const failures: string[] = [];
+
+        for (const [i, t] of tests.entries()) {
+          const res = await runPython(
+            { code, inputs: splitInputs((t.inputs ?? '').trim()), echo: false },
+            limit(),
+          );
+          const label = `Caso ${i + 1} (entradas: ${(t.inputs ?? '').trim().replace(/\n/g, ', ') || 'ninguna'})`;
+          if (res.timedOut) failures.push(`${label}: se quedó pegado (¿ciclo infinito?)`);
+          else if (res.error) failures.push(`${label}: error\n${res.error}`);
+          else if (normalize(res.output) !== normalize(t.expected))
+            failures.push(`${label}\n  esperado: ${normalize(t.expected)}\n  obtenido: ${normalize(res.output) || '(nada)'}`);
+        }
+
+        if (testCode) {
+          const res = await runPython(
+            { code, inputs: splitInputs(inputsEl.value), echo: false, check: testCode },
+            limit(),
+          );
+          if (res.timedOut) failures.push('Autograder: se quedó pegado (¿ciclo infinito?)');
+          else if (res.error) failures.push(res.error);
+        }
+
+        if (failures.length === 0) {
+          text += '\n\n🎉 ¡Ejercicio superado!';
+          markSolved();
+          storage.set(solvedKey, 'true');
+        } else {
+          text += `\n\n❌ ${failures.length} prueba(s) fallaron:\n\n${failures.join('\n\n')}`;
+        }
+        outputEl.textContent = text;
+      } finally {
+        runBtn.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .py-playground {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    background: var(--sl-color-gray-6);
+  }
+  .py-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .py-badge {
+    font-weight: 600;
+    color: var(--sl-color-text-accent);
+  }
+  .py-status {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: var(--sl-color-gray-5);
+    font-size: 0.75rem;
+  }
+  .py-status.solved {
+    background: #166534;
+    color: #dcfce7;
+  }
+  .py-editor,
+  .py-inputs {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--sl-font-mono);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    tab-size: 4;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--sl-color-gray-4);
+    background: #0f172a;
+    color: #f8fafc;
+    resize: vertical;
+  }
+  .py-inputs-box {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+  }
+  .py-inputs-box span {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .py-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .py-btn {
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .py-run {
+    background: #2563eb;
+    color: white;
+  }
+  .py-run:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  .py-reset {
+    background: var(--sl-color-gray-5);
+    color: var(--sl-color-white);
+  }
+  .py-hint summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .py-hint p {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+  }
+  .py-output {
+    margin: 0.75rem 0 0;
+    padding: 0.75rem;
+    background: #020617;
+    color: #e2e8f0;
+    border-radius: 0.375rem;
+    font-family: var(--sl-font-mono);
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    min-height: 2.5rem;
+  }
+</style>

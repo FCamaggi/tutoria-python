@@ -1,0 +1,175 @@
+---
+title: 'Módulo 1: Condicionales (if/elif/else)'
+description: Tomar decisiones según condiciones.
+---
+
+import PythonRunner from '../../components/PythonRunner.astro';
+import Quiz from '../../components/Quiz.astro';
+
+## Cómo se evalúa un `if`
+
+Python revisa las condiciones **de arriba hacia abajo** y ejecuta **solo el primer bloque** cuya condición sea `True`. El resto se salta.
+
+```python
+if nota >= 6.0:
+    print("Excelente")
+elif nota >= 4.0:
+    print("Aprobado")
+else:
+    print("Reprobado")
+```
+
+:::caution[Trampa clásica]
+El orden importa. Si pones `nota >= 4.0` primero, un 6.5 imprime "Aprobado" y nunca llega a "Excelente".
+:::
+
+## Ejercicio 1: aprobado o reprobado
+
+Lee una nota (puede tener decimales). Imprime `Aprobado` si es mayor o igual a 4.0, o `Reprobado` en otro caso.
+
+<PythonRunner
+	id="mod1-ej1-aprobado"
+	defaultInputs="4.0"
+	initialCode={`nota = float(input())
+
+# Tu if aquí
+`}
+	tests={[
+		{ inputs: '4.0', expected: 'Aprobado' },
+		{ inputs: '3.9', expected: 'Reprobado' },
+		{ inputs: '7.0', expected: 'Aprobado' },
+	]}
+	hint="Ojo con el borde: 4.0 debe aprobar, así que usa >= y no >."
+/>
+
+## Ejercicio 2: etapa de la vida
+
+Lee una edad entera e imprime:
+
+- `niño` si es menor de 13
+- `adolescente` si tiene entre 13 y 17
+- `adulto` si tiene 18 o más
+
+<PythonRunner
+	id="mod1-ej2-etapa"
+	defaultInputs="13"
+	initialCode={`edad = int(input())
+`}
+	tests={[
+		{ inputs: '12', expected: 'niño' },
+		{ inputs: '13', expected: 'adolescente' },
+		{ inputs: '17', expected: 'adolescente' },
+		{ inputs: '18', expected: 'adulto' },
+	]}
+	hint="Con elif no necesitas repetir 'edad >= 13': si llegaste al elif, ya sabes que no es menor de 13."
+/>
+
+## Cazabobos: ¿qué imprime?
+
+Piensa tu respuesta **antes** de hacer clic.
+
+<Quiz
+	code={`x = 5
+if x == 1 or 2:
+    print("Sí")
+else:
+    print("No")`}
+	options={[
+		{ text: 'No', explanation: 'Parece lógico, porque x no es 1 ni 2. Pero Python no lee "x es 1 o 2": lee (x == 1) or (2).' },
+		{ text: 'Sí', correct: true, explanation: 'Python evalúa (x == 1) or 2. Lo primero es False, pero 2 por sí solo cuenta como verdadero (todo número distinto de 0 lo es). Lo correcto es x == 1 or x == 2.' },
+		{ text: 'Error', explanation: 'Es código válido; justamente por eso es una trampa: no avisa y da un resultado inesperado.' },
+	]}
+/>
+
+<Quiz
+	code={`n = 15
+if n > 10:
+    print("A")
+if n > 5:
+    print("B")
+else:
+    print("C")`}
+	options={[
+		{ text: 'A', explanation: 'Eso pasaría con un elif. Aquí son dos if independientes: después del primero se evalúa también el segundo.' },
+		{ text: 'A\nB', correct: true, explanation: 'Son dos if separados y se evalúan los dos. 15 > 10 imprime A; 15 > 5 imprime B. El else pertenece solo al segundo if.' },
+		{ text: 'A\nC', explanation: 'El else pertenece solo al segundo if. Como 15 > 5 es verdadero, se ejecuta print("B") y el else se salta.' },
+		{ text: 'B', explanation: 'El primer if también se cumple (15 > 10), así que A se imprime antes.' },
+	]}
+/>
+
+<Quiz
+	code={`n = 15
+if n > 5:
+    print("B")
+elif n > 10:
+    print("A")`}
+	options={[
+		{ text: 'B\nA', explanation: 'En una cadena if/elif se ejecuta solo el PRIMER bloque cuya condición se cumple. Después de imprimir B, el elif se salta.' },
+		{ text: 'A', explanation: '15 > 10 es cierto, pero Python revisa de arriba hacia abajo y 15 > 5 llega antes. El orden de las condiciones importa.' },
+		{ text: 'B', correct: true, explanation: 'La primera condición verdadera gana y el resto se salta. Por eso las condiciones más exigentes (n > 10) van primero.' },
+	]}
+/>
+
+<Quiz
+	code={`nota = 4.0
+if nota > 4.0:
+    print("Aprobado")
+else:
+    print("Reprobado")`}
+	options={[
+		{ text: 'Aprobado', explanation: '> significa estrictamente mayor. 4.0 no es mayor que 4.0, así que la condición es falsa.' },
+		{ text: 'Reprobado', correct: true, explanation: '4.0 > 4.0 es False. Si el 4.0 debe aprobar, la condición es nota >= 4.0. Revisa siempre qué pasa justo en el borde.' },
+	]}
+/>
+
+<Quiz
+	question="El usuario escribe 20. ¿Qué pasa?"
+	code={`edad = input()
+if edad >= 18:
+    print("Adulto")`}
+	options={[
+		{ text: 'Adulto', explanation: 'Para Python, edad es el texto "20" y no el número 20. No se puede comparar texto con un número usando >=.' },
+		{ text: 'No imprime nada', explanation: 'Ni siquiera llega a decidir: la comparación misma produce un error.' },
+		{ text: 'Error (TypeError)', correct: true, explanation: 'input() devuelve texto, y "20" >= 18 compara un str con un int, lo que no está permitido. Solución: edad = int(input()).' },
+	]}
+/>
+
+## Ejercicio: año bisiesto
+
+Un año es bisiesto si es divisible por 4, **excepto** los divisibles por 100, que solo lo son si también son divisibles por 400. Lee un año e imprime `Bisiesto` o `No bisiesto`.
+
+<PythonRunner
+	id="mod1-ej3-bisiesto"
+	defaultInputs="2024"
+	initialCode={`anio = int(input())
+`}
+	tests={[
+		{ inputs: '2024', expected: 'Bisiesto' },
+		{ inputs: '2023', expected: 'No bisiesto' },
+		{ inputs: '1900', expected: 'No bisiesto' },
+		{ inputs: '2000', expected: 'Bisiesto' },
+	]}
+	hint="Una sola condición: anio % 4 == 0 and (anio % 100 != 0 or anio % 400 == 0)."
+/>
+
+## Ejercicio: el mayor de tres
+
+Lee tres enteros (uno por línea) e imprime el mayor. Pueden repetirse y pueden ser negativos.
+
+<PythonRunner
+	id="mod1-ej4-mayor"
+	defaultInputs={`3
+7
+5`}
+	initialCode={`a = int(input())
+b = int(input())
+c = int(input())
+`}
+	tests={[
+		{ inputs: '3\n7\n5', expected: '7' },
+		{ inputs: '5\n5\n2', expected: '5' },
+		{ inputs: '2\n9\n9', expected: '9' },
+		{ inputs: '-1\n-5\n-3', expected: '-1' },
+	]}
+	hint="Cuidado con los empates: usa >= en vez de >. Y si partes con mayor = 0, fallas cuando todos son negativos: parte con mayor = a."
+/>
