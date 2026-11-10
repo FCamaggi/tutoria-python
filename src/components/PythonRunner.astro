@@ -6,7 +6,9 @@
  * - tests: list of { inputs, expected } cases; the student's printed output
  *   (input() prompts are not echoed while grading) must equal `expected`.
  * - testCode: Python asserts run after the student's code, in the same
- *   namespace, with the default inputs. `_stdout` holds the printed output.
+ *   namespace, with the default inputs. `_stdout` holds the printed output and
+ *   `_source` the student's code as text (e.g. to ast.parse it and require or
+ *   forbid a kind of loop).
  */
 interface TestCase {
   inputs?: string;

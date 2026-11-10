@@ -21,7 +21,7 @@ def _run(code, inputs, echo, check):
             print(f"{prompt}{value}")
         return value
 
-    ns = {"__name__": "__main__", "input": fake_input}
+    ns = {"__name__": "__main__", "input": fake_input, "_source": code}
     error = None
     try:
         exec(compile(code, "<tu codigo>", "exec"), ns)

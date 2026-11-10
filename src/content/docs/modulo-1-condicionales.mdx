@@ -173,3 +173,398 @@ c = int(input())
 	]}
 	hint="Cuidado con los empates: usa >= en vez de >. Y si partes con mayor = 0, fallas cuando todos son negativos: parte con mayor = a."
 />
+
+## Práctica: Guía 2 (instrucciones de decisión)
+
+Son los mismos problemas de la Guía 1, pero ahora el programa además **decide** algo con el resultado. Cada ejercicio imprime primero los cálculos y al final el mensaje de la decisión.
+
+Un patrón se repite en todos: calcular → mostrar → comparar. Antes de escribir el `if`, pregúntate **qué valor** se compara (¿la edad actual o la futura? ¿el precio neto o el final?) y **qué pasa justo en el borde** (`>=` o `>`).
+
+### 1. Edad en cinco años
+
+Lee la edad actual de una persona y calcula la edad que tendrá dentro de cinco años. Imprime esa edad y luego si **será** mayor o menor de edad (mayor si la edad futura es 18 o más):
+
+```
+Edad en cinco años: 23
+Será mayor de edad
+```
+
+El segundo mensaje es `Será menor de edad` en caso contrario.
+
+<PythonRunner
+	id="mod1-g2-01-mayoria5"
+	defaultInputs="18"
+	initialCode={`edad = int(input())
+`}
+	tests={[
+		{ inputs: '18', expected: 'Edad en cinco años: 23\nSerá mayor de edad' },
+		{ inputs: '12', expected: 'Edad en cinco años: 17\nSerá menor de edad' },
+		{ inputs: '13', expected: 'Edad en cinco años: 18\nSerá mayor de edad' },
+		{ inputs: '0', expected: 'Edad en cinco años: 5\nSerá menor de edad' },
+	]}
+	hint='Decide con la edad **futura**, no con la actual. El borde es justo 18: ¿qué edad actual da 18 dentro de cinco años?'
+/>
+
+### 2. Promedio de tres números
+
+Lee tres notas (una por línea) y calcula su promedio. Imprime el promedio con 2 decimales y luego `Aprobado` si es mayor o igual a 4.0, o `Reprobado` en otro caso:
+
+```
+Promedio: 4.33
+Aprobado
+```
+
+<PythonRunner
+	id="mod1-g2-02-promedio3"
+	defaultInputs={`4
+4
+4`}
+	initialCode={`a = float(input())
+b = float(input())
+c = float(input())
+`}
+	tests={[
+		{ inputs: '4\n4\n4', expected: 'Promedio: 4.00\nAprobado' },
+		{ inputs: '3\n4\n5', expected: 'Promedio: 4.00\nAprobado' },
+		{ inputs: '2\n3\n6', expected: 'Promedio: 3.67\nReprobado' },
+		{ inputs: '7\n1\n3.5', expected: 'Promedio: 3.83\nReprobado' },
+	]}
+	hint='Compara el promedio sin redondear. Redondear solo sirve para mostrarlo.'
+/>
+
+### 3. Rectángulo o cuadrado
+
+Lee el largo y el ancho de un rectángulo (uno por línea). Imprime su área y su perímetro con 2 decimales y luego `El rectángulo es un cuadrado` si ambos lados son iguales, o `Es un rectángulo` en otro caso:
+
+```
+Área: 25.00
+Perímetro: 20.00
+El rectángulo es un cuadrado
+```
+
+<PythonRunner
+	id="mod1-g2-03-rectangulo"
+	defaultInputs={`5
+5`}
+	initialCode={`largo = float(input())
+ancho = float(input())
+`}
+	tests={[
+		{ inputs: '5\n5', expected: 'Área: 25.00\nPerímetro: 20.00\nEl rectángulo es un cuadrado' },
+		{ inputs: '5\n3', expected: 'Área: 15.00\nPerímetro: 16.00\nEs un rectángulo' },
+		{ inputs: '2.5\n2.5', expected: 'Área: 6.25\nPerímetro: 10.00\nEl rectángulo es un cuadrado' },
+		{ inputs: '1\n10', expected: 'Área: 10.00\nPerímetro: 22.00\nEs un rectángulo' },
+	]}
+	hint='Para comparar igualdad se usa == (dos signos). Un solo = asigna.'
+/>
+
+### 4. Círculo pequeño o grande
+
+Lee el radio de un círculo (usa π = `3.1416`). Imprime su área y su perímetro con 2 decimales y luego `Círculo grande` si el área es mayor o igual a 100, o `Círculo pequeño` en otro caso:
+
+```
+Área: 78.54
+Perímetro: 31.42
+Círculo pequeño
+```
+
+<PythonRunner
+	id="mod1-g2-04-circulo"
+	defaultInputs="5"
+	initialCode={`radio = float(input())
+`}
+	tests={[
+		{ inputs: '5', expected: 'Área: 78.54\nPerímetro: 31.42\nCírculo pequeño' },
+		{ inputs: '6', expected: 'Área: 113.10\nPerímetro: 37.70\nCírculo grande' },
+		{ inputs: '1', expected: 'Área: 3.14\nPerímetro: 6.28\nCírculo pequeño' },
+		{ inputs: '10', expected: 'Área: 314.16\nPerímetro: 62.83\nCírculo grande' },
+	]}
+	hint='Decide con el área, no con el radio.'
+/>
+
+### 5. Producto de precio alto o bajo
+
+Lee el precio neto de un producto. Calcula el IVA (19%) y el precio final, e imprímelos con 2 decimales. Luego imprime `Producto de precio alto` si el **precio final** es mayor o igual a $100.000, o `Producto de precio bajo` en otro caso:
+
+```
+IVA: 19000.00
+Precio final: 119000.00
+Producto de precio alto
+```
+
+<PythonRunner
+	id="mod1-g2-05-iva"
+	defaultInputs="100000"
+	initialCode={`neto = float(input())
+`}
+	tests={[
+		{ inputs: '100000', expected: 'IVA: 19000.00\nPrecio final: 119000.00\nProducto de precio alto' },
+		{ inputs: '50000', expected: 'IVA: 9500.00\nPrecio final: 59500.00\nProducto de precio bajo' },
+		{ inputs: '84000', expected: 'IVA: 15960.00\nPrecio final: 99960.00\nProducto de precio bajo' },
+		{ inputs: '84034', expected: 'IVA: 15966.46\nPrecio final: 100000.46\nProducto de precio alto' },
+	]}
+	hint='Ojo: se compara el precio final (con IVA), no el neto. 84000 neto queda en 99960 y 84034 en 100000.46.'
+/>
+
+### 6. Descuento importante o pequeño
+
+Lee el precio de un producto y un porcentaje de descuento (uno por línea). Imprime el monto del descuento y el precio final con 2 decimales y luego `Descuento importante` si el porcentaje es mayor o igual a 30, o `Descuento pequeño` en otro caso:
+
+```
+Descuento: 3000.00
+Precio final: 7000.00
+Descuento importante
+```
+
+<PythonRunner
+	id="mod1-g2-06-descuento"
+	defaultInputs={`10000
+30`}
+	initialCode={`precio = float(input())
+porcentaje = float(input())
+`}
+	tests={[
+		{ inputs: '10000\n30', expected: 'Descuento: 3000.00\nPrecio final: 7000.00\nDescuento importante' },
+		{ inputs: '10000\n29', expected: 'Descuento: 2900.00\nPrecio final: 7100.00\nDescuento pequeño' },
+		{ inputs: '25000\n50', expected: 'Descuento: 12500.00\nPrecio final: 12500.00\nDescuento importante' },
+		{ inputs: '9990\n5', expected: 'Descuento: 499.50\nPrecio final: 9490.50\nDescuento pequeño' },
+	]}
+	hint='Se compara el porcentaje (no el monto). Prueba el borde: 30 debe ser importante.'
+/>
+
+### 7. Sueldo con horas extra
+
+Lee las horas trabajadas y el valor por hora (enteros, uno por línea). Las primeras 40 horas se pagan al valor normal; **las horas sobre 40 se pagan al doble**. Imprime el sueldo total:
+
+```
+Sueldo: 500000
+```
+
+Por ejemplo, 45 horas a $10.000: 40 × 10.000 + 5 × 20.000 = 500.000.
+
+<PythonRunner
+	id="mod1-g2-07-sueldo-extras"
+	defaultInputs={`45
+10000`}
+	initialCode={`horas = int(input())
+valor_hora = int(input())
+`}
+	tests={[
+		{ inputs: '45\n10000', expected: 'Sueldo: 500000' },
+		{ inputs: '40\n10000', expected: 'Sueldo: 400000' },
+		{ inputs: '41\n10000', expected: 'Sueldo: 420000' },
+		{ inputs: '20\n8000', expected: 'Sueldo: 160000' },
+		{ inputs: '60\n12500', expected: 'Sueldo: 1000000' },
+	]}
+	hint='Las horas extra son solo las que exceden 40 (horas - 40), no todas las horas.'
+/>
+
+### 8. Clasificación del IMC
+
+Lee el peso (kg) y la estatura (m), una por línea. Imprime el IMC con 2 decimales y luego `Bajo peso` si el IMC es menor que 18.5, o `Peso normal o superior` en otro caso:
+
+```
+IMC: 22.86
+Peso normal o superior
+```
+
+<PythonRunner
+	id="mod1-g2-08-imc"
+	defaultInputs={`70
+1.75`}
+	initialCode={`peso = float(input())
+estatura = float(input())
+`}
+	tests={[
+		{ inputs: '70\n1.75', expected: 'IMC: 22.86\nPeso normal o superior' },
+		{ inputs: '50\n1.65', expected: 'IMC: 18.37\nBajo peso' },
+		{ inputs: '74\n2', expected: 'IMC: 18.50\nPeso normal o superior' },
+		{ inputs: '45\n1.80', expected: 'IMC: 13.89\nBajo peso' },
+	]}
+	hint='El caso 74 kg y 2 m da un IMC de exactamente 18.5, que ya es peso normal: usa < y no <=.'
+/>
+
+
+## Condicionales anidados
+
+Un `if` puede contener otro `if`. El de adentro **solo se evalúa si se cumplió el de afuera**. La indentación indica a qué `if` pertenece cada `else`.
+
+```python
+if descuento >= 30:
+    if precio_final >= 50000:
+        print("Descuento importante, precio alto")
+    else:
+        print("Descuento importante, precio bajo")
+else:
+    print("Descuento pequeño")
+```
+
+:::tip[¿Anidar o dos if separados?]
+Anida cuando la segunda pregunta **depende** de la primera (en el ejemplo, solo importa el precio final si el descuento es importante). Usa dos `if` separados cuando las preguntas son **independientes** y las dos deben responderse siempre.
+:::
+
+<Quiz
+	code={`x = 15
+if x > 10:
+    if x > 20:
+        print("A")
+    else:
+        print("B")
+else:
+    print("C")`}
+	options={[
+		{ text: 'A', explanation: 'x > 10 es cierto, pero el if de adentro pregunta x > 20, y 15 no lo cumple.' },
+		{ text: 'B', correct: true, explanation: 'Entra al primer if (15 > 10), y en el de adentro 15 > 20 es falso, por lo que se ejecuta su else.' },
+		{ text: 'C', explanation: 'Ese else pertenece al if de AFUERA (x > 10), que sí se cumplió. Por eso nunca se ejecuta.' },
+	]}
+/>
+
+<Quiz
+	code={`a = 3
+if a > 5:
+    if a > 10:
+        print("X")
+else:
+    print("Y")`}
+	options={[
+		{ text: 'No imprime nada', explanation: 'El else está alineado con el if de afuera: se ejecuta cuando a > 5 es falso, y 3 > 5 es falso.' },
+		{ text: 'X', explanation: 'Para llegar a "X" primero debería cumplirse a > 5.' },
+		{ text: 'Y', correct: true, explanation: 'El else queda a la altura del primer if, así que le pertenece a él. Como 3 > 5 es falso, se ejecuta el else y se imprime Y.' },
+	]}
+/>
+
+## Práctica: Laboratorio 2 (bifurcaciones)
+
+Aquí se combinan los dos patrones: decisiones **anidadas** (la segunda pregunta depende de la primera) y decisiones **independientes** (dos clasificaciones que siempre se muestran). Fíjate bien en cuál es cuál en cada enunciado.
+
+### 1. Sueldo con horas extra: alto o bajo
+
+Lee las horas trabajadas y el valor por hora (enteros, uno por línea). Las horas sobre 40 se pagan al doble. Luego clasifica el sueldo:
+
+- Si trabajó **más de 40 horas**:
+  - sueldo ≥ 1.500.000 → `Sueldo alto con horas extras`
+  - en caso contrario → `Sueldo bajo con horas extras`
+- Si trabajó **40 horas o menos**:
+  - sueldo ≥ 1.200.000 → `Sueldo alto sin horas extras`
+  - en caso contrario → `Sueldo bajo sin horas extras`
+
+Imprime primero la clasificación y después el sueldo:
+
+```
+Sueldo alto con horas extras
+Sueldo total: 1800000
+```
+
+<PythonRunner
+	id="mod1-l2-01-sueldo"
+	defaultInputs={`50
+30000`}
+	initialCode={`horas = int(input())
+valor_hora = int(input())
+`}
+	tests={[
+		{ inputs: '50\n30000', expected: 'Sueldo alto con horas extras\nSueldo total: 1800000' },
+		{ inputs: '45\n25000', expected: 'Sueldo bajo con horas extras\nSueldo total: 1250000' },
+		{ inputs: '40\n30000', expected: 'Sueldo alto sin horas extras\nSueldo total: 1200000' },
+		{ inputs: '35\n30000', expected: 'Sueldo bajo sin horas extras\nSueldo total: 1050000' },
+		{ inputs: '41\n36000', expected: 'Sueldo alto con horas extras\nSueldo total: 1512000' },
+		{ inputs: '40\n29999', expected: 'Sueldo bajo sin horas extras\nSueldo total: 1199960' },
+	]}
+	hint='Primero decide si hubo horas extra (if horas > 40). Dentro de cada rama calcula el sueldo y haz el segundo if. Los umbrales son distintos en cada rama.'
+/>
+
+### 2. Descuento según el precio
+
+Lee el precio de un producto y un porcentaje de descuento (uno por línea). Calcula el descuento y el precio final y clasifica:
+
+- Si el descuento es **≥ 30%**:
+  - precio final ≥ 50.000 → `Descuento importante en producto de precio alto`
+  - en caso contrario → `Descuento importante en producto de precio bajo`
+- Si el descuento es **menor a 30%** → `Descuento pequeño`
+
+Imprime la clasificación y luego el monto y el precio final (2 decimales):
+
+```
+Descuento importante en producto de precio alto
+Descuento: 40000.00
+Precio final: 60000.00
+```
+
+<PythonRunner
+	id="mod1-l2-02-descuento"
+	defaultInputs={`100000
+40`}
+	initialCode={`precio = float(input())
+porcentaje = float(input())
+`}
+	tests={[
+		{ inputs: '100000\n40', expected: 'Descuento importante en producto de precio alto\nDescuento: 40000.00\nPrecio final: 60000.00' },
+		{ inputs: '100000\n30', expected: 'Descuento importante en producto de precio alto\nDescuento: 30000.00\nPrecio final: 70000.00' },
+		{ inputs: '50000\n30', expected: 'Descuento importante en producto de precio bajo\nDescuento: 15000.00\nPrecio final: 35000.00' },
+		{ inputs: '60000\n50', expected: 'Descuento importante en producto de precio bajo\nDescuento: 30000.00\nPrecio final: 30000.00' },
+		{ inputs: '80000\n10', expected: 'Descuento pequeño\nDescuento: 8000.00\nPrecio final: 72000.00' },
+	]}
+	hint='El segundo if solo existe dentro de la rama del descuento importante. Calcula descuento y precio final antes de decidir.'
+/>
+
+### 3. Mayoría de edad hoy y en cinco años
+
+Lee la edad actual y calcula la edad dentro de cinco años. Imprime dos clasificaciones **independientes** y luego ambas edades:
+
+```
+Actualmente es menor de edad
+Dentro de cinco años será mayor de edad
+Edad actual: 15
+Edad en cinco años: 20
+```
+
+Los mensajes posibles son `Actualmente es mayor de edad` / `Actualmente es menor de edad` y `Dentro de cinco años será mayor de edad` / `Dentro de cinco años será menor de edad`.
+
+<PythonRunner
+	id="mod1-l2-03-edades"
+	defaultInputs="20"
+	initialCode={`edad = int(input())
+`}
+	tests={[
+		{ inputs: '20', expected: 'Actualmente es mayor de edad\nDentro de cinco años será mayor de edad\nEdad actual: 20\nEdad en cinco años: 25' },
+		{ inputs: '15', expected: 'Actualmente es menor de edad\nDentro de cinco años será mayor de edad\nEdad actual: 15\nEdad en cinco años: 20' },
+		{ inputs: '12', expected: 'Actualmente es menor de edad\nDentro de cinco años será menor de edad\nEdad actual: 12\nEdad en cinco años: 17' },
+		{ inputs: '13', expected: 'Actualmente es menor de edad\nDentro de cinco años será mayor de edad\nEdad actual: 13\nEdad en cinco años: 18' },
+		{ inputs: '18', expected: 'Actualmente es mayor de edad\nDentro de cinco años será mayor de edad\nEdad actual: 18\nEdad en cinco años: 23' },
+		{ inputs: '17', expected: 'Actualmente es menor de edad\nDentro de cinco años será mayor de edad\nEdad actual: 17\nEdad en cinco años: 22' },
+	]}
+	hint='Son dos if/else separados (no un elif): las dos preguntas son independientes y las dos imprimen algo.'
+/>
+
+### 4. Aprobación y rendimiento
+
+Lee tres notas entre 1.0 y 7.0 (una por línea) y calcula el promedio. Imprime dos clasificaciones independientes y luego el promedio con 2 decimales:
+
+- `Aprobado` si el promedio es ≥ 4.0, `Reprobado` en otro caso.
+- `Rendimiento destacado` si el promedio es ≥ 5.5, `Rendimiento regular o insuficiente` en otro caso.
+
+```
+Aprobado
+Rendimiento destacado
+Promedio: 6.00
+```
+
+<PythonRunner
+	id="mod1-l2-04-notas"
+	defaultInputs={`6
+6
+6`}
+	initialCode={`a = float(input())
+b = float(input())
+c = float(input())
+`}
+	tests={[
+		{ inputs: '6\n6\n6', expected: 'Aprobado\nRendimiento destacado\nPromedio: 6.00' },
+		{ inputs: '5.5\n5.5\n5.5', expected: 'Aprobado\nRendimiento destacado\nPromedio: 5.50' },
+		{ inputs: '4\n4\n4', expected: 'Aprobado\nRendimiento regular o insuficiente\nPromedio: 4.00' },
+		{ inputs: '3\n3\n4', expected: 'Reprobado\nRendimiento regular o insuficiente\nPromedio: 3.33' },
+		{ inputs: '7\n7\n1', expected: 'Aprobado\nRendimiento regular o insuficiente\nPromedio: 5.00' },
+		{ inputs: '5\n6\n5', expected: 'Aprobado\nRendimiento regular o insuficiente\nPromedio: 5.33' },
+	]}
+	hint='Dos if/else independientes sobre el mismo promedio. Los umbrales (4.0 y 5.5) son ≥, así que los bordes aprueban.'
+/>
