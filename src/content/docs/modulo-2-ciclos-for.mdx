@@ -169,3 +169,146 @@ Lee `n` e imprime una escalera de `n` filas. Para `n = 3`:
 	]}
 	hint="En Python, '*' * 3 da '***'. La fila i (de 1 a n) tiene i asteriscos."
 />
+
+## Práctica: Laboratorio 3 (ciclos for)
+
+Cuatro patrones que verás una y otra vez dentro de un `for`:
+
+| Patrón | Se prepara antes del ciclo | Dentro del ciclo |
+| --- | --- | --- |
+| Contador | `cantidad = 0` | `cantidad += 1` si se cumple algo |
+| Acumulador | `suma = 0` | `suma += x` |
+| Máximo / mínimo | `maximo = primer valor` | `if x > maximo: maximo = x` |
+| Filtro | nada | `if` que decide si se usa el valor |
+
+Cuando se leen datos, el `for` solo repite la lectura: `for _ in range(n): x = int(input())`. El `_` indica que no necesitas el contador.
+
+### 1. Recorridos numéricos
+
+Lee dos enteros, `inicio` y `fin` (uno por línea, con `inicio ≤ fin`), e imprime **en cuatro líneas**:
+
+1. Todos los números del intervalo, extremos incluidos.
+2. Solo los pares.
+3. La suma de todos los números del intervalo.
+4. Todos los números en orden descendente (de `fin` a `inicio`).
+
+Para `1` y `10`:
+
+```
+Números: 1 2 3 4 5 6 7 8 9 10
+Pares: 2 4 6 8 10
+Suma: 55
+Descendente: 10 9 8 7 6 5 4 3 2 1
+```
+
+Para imprimir en una misma línea usa `print(i, end=" ")` dentro del ciclo y un `print()` vacío al final de cada línea.
+
+<PythonRunner
+	id="mod2-l3-01-recorridos"
+	defaultInputs={`1
+10`}
+	initialCode={`inicio = int(input())
+fin = int(input())
+`}
+	tests={[
+		{ inputs: '1\n10', expected: 'Números: 1 2 3 4 5 6 7 8 9 10\nPares: 2 4 6 8 10\nSuma: 55\nDescendente: 10 9 8 7 6 5 4 3 2 1' },
+		{ inputs: '3\n3', expected: 'Números: 3\nPares:\nSuma: 3\nDescendente: 3' },
+		{ inputs: '-2\n4', expected: 'Números: -2 -1 0 1 2 3 4\nPares: -2 0 2 4\nSuma: 7\nDescendente: 4 3 2 1 0 -1 -2' },
+		{ inputs: '5\n6', expected: 'Números: 5 6\nPares: 6\nSuma: 11\nDescendente: 6 5' },
+	]}
+	hint='Para descender: range(fin, inicio - 1, -1). El -1 en el límite es porque el límite no se incluye. Si no hay pares (como en 3 y 3), la línea queda solo con "Pares:".'
+/>
+
+
+<Quiz
+	code={`print(-3 % 2)`}
+	options={[
+		{ text: '-1', explanation: 'En otros lenguajes (C, Java) el resto de un negativo puede salir negativo, pero en Python el resto siempre tiene el signo del divisor.' },
+		{ text: '1', correct: true, explanation: 'En Python -3 % 2 vale 1 (porque -3 = 2·(-2) + 1). Por eso x % 2 == 0 detecta pares y x % 2 != 0 detecta impares, también con negativos.' },
+		{ text: '0', explanation: '-3 no es divisible por 2, así que el resto no puede ser 0.' },
+	]}
+/>
+
+### 2. Análisis de una secuencia numérica
+
+Lee un entero `n` (cuántos números vendrán) y luego `n` enteros, uno por línea. Cuenta cuántos son positivos, negativos y ceros; cuántos son pares e impares (el 0 es par); y suma los positivos.
+
+```
+Positivos: 3
+Negativos: 2
+Ceros: 1
+Pares: 3
+Impares: 3
+Suma de positivos: 14
+```
+
+<PythonRunner
+	id="mod2-l3-02-secuencia"
+	defaultInputs={`6
+5
+-3
+0
+8
+-2
+1`}
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '6\n5\n-3\n0\n8\n-2\n1', expected: 'Positivos: 3\nNegativos: 2\nCeros: 1\nPares: 3\nImpares: 3\nSuma de positivos: 14' },
+		{ inputs: '1\n0', expected: 'Positivos: 0\nNegativos: 0\nCeros: 1\nPares: 1\nImpares: 0\nSuma de positivos: 0' },
+		{ inputs: '3\n-7\n-4\n-1', expected: 'Positivos: 0\nNegativos: 3\nCeros: 0\nPares: 1\nImpares: 2\nSuma de positivos: 0' },
+		{ inputs: '4\n10\n20\n30\n40', expected: 'Positivos: 4\nNegativos: 0\nCeros: 0\nPares: 4\nImpares: 0\nSuma de positivos: 100' },
+	]}
+	hint='Son dos clasificaciones independientes (signo y paridad): usa un if/elif/else para el signo y otro if/else aparte para la paridad. En Python, -3 % 2 vale 1, así que x % 2 == 0 sirve para negativos.'
+/>
+
+
+<Quiz
+	code={`temps = [-5, -2, -9]
+maximo = 0
+for t in temps:
+    if t > maximo:
+        maximo = t
+print(maximo)`}
+	options={[
+		{ text: '-2', explanation: 'Eso es lo que debería dar, pero con maximo = 0 ninguna temperatura negativa llega a superarlo.' },
+		{ text: '0', correct: true, explanation: 'El 0 inicial es mayor que todas las temperaturas, así que maximo nunca cambia. Inicializa con el primer dato (maximo = temps[0]) o con el primer valor leído.' },
+		{ text: '-9', explanation: 'Ese es el mínimo, no el máximo.' },
+	]}
+/>
+
+### 3. Análisis de temperaturas
+
+Lee la cantidad de días `n` y luego la temperatura (decimal) de cada día, una por línea. Imprime el promedio, la máxima, la mínima (las tres con 2 decimales) y cuántos días estuvieron bajo cero:
+
+```
+Promedio: 15.25
+Máxima: 22.00
+Mínima: -3.00
+Días bajo cero: 1
+```
+
+Asume que `n ≥ 1`.
+
+<PythonRunner
+	id="mod2-l3-03-temperaturas"
+	defaultInputs={`4
+20
+-3
+22
+22`}
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '4\n20\n-3\n22\n22', expected: 'Promedio: 15.25\nMáxima: 22.00\nMínima: -3.00\nDías bajo cero: 1' },
+		{ inputs: '3\n-5\n-2\n-9', expected: 'Promedio: -5.33\nMáxima: -2.00\nMínima: -9.00\nDías bajo cero: 3' },
+		{ inputs: '1\n0', expected: 'Promedio: 0.00\nMáxima: 0.00\nMínima: 0.00\nDías bajo cero: 0' },
+		{ inputs: '5\n10.5\n12\n8.5\n0\n-0.5', expected: 'Promedio: 6.10\nMáxima: 12.00\nMínima: -0.50\nDías bajo cero: 1' },
+	]}
+	hint='No inicialices la máxima en 0: si todas las temperaturas son negativas, la máxima nunca se actualiza. Parte con el primer valor leído (por ejemplo, dentro de un if i == 0).'
+/>
+
+
+:::note
+El ejercicio 4 del Laboratorio 3 (**validación de datos**) está en el módulo 3, porque necesita un `while` dentro del `for`.
+:::

@@ -1,0 +1,375 @@
+---
+title: 'Módulo 4: Listas'
+description: Guardar, recorrer y modificar varios datos con listas, for y while.
+---
+
+import PythonRunner from '../../components/PythonRunner.astro';
+import Quiz from '../../components/Quiz.astro';
+import PythonTutor from '../../components/PythonTutor.astro';
+
+Hasta ahora cada dato vivía en una variable. Cuando son muchos (8 notas, 12 temperaturas), una **lista** los guarda todos bajo un mismo nombre y te deja recorrerlos con un ciclo.
+
+## Lo esencial de las listas
+
+```python
+notas = [5.5, 4.0, 6.2]    # lista con 3 elementos
+notas[0]                    # 5.5  (el primero tiene índice 0)
+notas[-1]                   # 6.2  (índice negativo: desde el final)
+len(notas)                  # 3
+notas.append(7.0)           # agrega al final -> [5.5, 4.0, 6.2, 7.0]
+notas[1] = 4.5              # reemplaza el elemento del índice 1
+```
+
+Los índices válidos van de `0` a `len(lista) - 1`. Pedir `notas[len(notas)]` es un `IndexError`.
+
+### Leer datos y guardarlos en una lista
+
+Es el patrón de acumulador, pero con una lista que parte vacía:
+
+```python
+n = int(input())
+numeros = []
+for _ in range(n):
+    numeros.append(int(input()))
+```
+
+### Dos formas de recorrer
+
+| Forma | Cuándo usarla |
+| --- | --- |
+| `for x in lista:` | Solo necesitas **leer** cada valor |
+| `for i in range(len(lista)):` | Necesitas el **índice** (para modificar, para mirar vecinos, para mostrar la posición) |
+
+<PythonTutor code={`
+numeros = [4, 7, 2]
+suma = 0
+for i in range(len(numeros)):
+    numeros[i] = numeros[i] * 2
+    suma = suma + numeros[i]
+print(numeros, suma)
+`} />
+
+## Cazabobos: ¿qué imprime?
+
+<Quiz
+	code={`numeros = [1, 2, 3]
+for x in numeros:
+    x = x * 2
+print(numeros)`}
+	options={[
+		{ text: '[2, 4, 6]', explanation: 'x es una copia del valor en cada vuelta. Reasignar x no cambia la lista. Para modificarla hay que asignar por índice: numeros[i] = ...' },
+		{ text: '[1, 2, 3]', correct: true, explanation: 'x = x * 2 solo cambia la variable x, no el elemento de la lista. Para modificar hay que recorrer con índices (range(len(numeros))) y escribir numeros[i] = numeros[i] * 2.' },
+		{ text: 'Error', explanation: 'Es código válido; justamente por eso es una trampa: no hace lo que parece, pero tampoco avisa.' },
+	]}
+/>
+
+<Quiz
+	code={`a = [1, 2, 3]
+b = a
+b.append(4)
+print(a)`}
+	options={[
+		{ text: '[1, 2, 3]', explanation: 'b = a NO copia la lista: a y b son dos nombres para la misma lista.' },
+		{ text: '[1, 2, 3, 4]', correct: true, explanation: 'b = a hace que ambos nombres apunten a la misma lista, así que lo que le hagas a b también se ve en a. Para tener una copia independiente usa b = a[:] (o list(a)).' },
+		{ text: '[4]', explanation: 'append agrega al final de la lista existente, no la reemplaza.' },
+	]}
+/>
+
+<Quiz
+	code={`lista = [1, 2, 3, 4]
+for i in range(1, len(lista)):
+    lista[i] = lista[i] + lista[i - 1]
+print(lista)`}
+	options={[
+		{ text: '[1, 3, 5, 7]', explanation: 'Eso sería sumar los elementos originales de a pares. Pero lista[i - 1] ya fue modificado en la vuelta anterior.' },
+		{ text: '[1, 3, 6, 10]', correct: true, explanation: 'Cada vuelta usa el valor ya actualizado del anterior: 2 + 1 = 3, luego 3 + 3 = 6 y 4 + 6 = 10. Son sumas acumuladas.' },
+		{ text: '[2, 4, 6, 8]', explanation: 'El ciclo parte en el índice 1, y cada elemento se suma con el anterior, no consigo mismo.' },
+	]}
+/>
+
+<Quiz
+	code={`lista = [3, 1, 2]
+invertida = lista.reverse()
+print(invertida)`}
+	options={[
+		{ text: '[2, 1, 3]', explanation: 'reverse() sí da vuelta la lista, pero no la devuelve: la modifica en el lugar.' },
+		{ text: 'None', correct: true, explanation: 'Los métodos que modifican la lista en el lugar (reverse, sort, append) devuelven None. Además, modifican la original. Para obtener una copia invertida sin tocar la original: lista[::-1].' },
+		{ text: '[3, 1, 2]', explanation: 'La lista original sí quedó invertida ([2, 1, 3]), pero la variable invertida guarda lo que devuelve reverse(): nada.' },
+	]}
+/>
+
+<Quiz
+	code={`lista = [10, 20, 30]
+print(lista[len(lista)])`}
+	options={[
+		{ text: '30', explanation: 'El último elemento es lista[len(lista) - 1] o lista[-1]. len(lista) vale 3 y el último índice es 2.' },
+		{ text: 'Error (IndexError)', correct: true, explanation: 'Con 3 elementos los índices válidos son 0, 1 y 2. El índice 3 está fuera de rango.' },
+		{ text: '10', explanation: 'Los índices no "dan la vuelta" al llegar al final (solo los negativos cuentan desde el final).' },
+	]}
+/>
+
+## Práctica: Laboratorio 5 (listas con for y while)
+
+Antes de partir, recuerda el patrón: *construir* una lista (`append`), *recorrerla* (`for x in lista` o `range(len(lista))`) y *modificarla* (`lista[i] = ...`). Cuando el enunciado dice "sin modificar la lista original", trabaja sobre una copia o construye una lista nueva.
+
+### 1. Construcción y recorrido de una lista
+
+Lee 8 enteros (uno por línea) y guárdalos en una lista llamada `numeros`. Luego imprime los números **en orden inverso al de ingreso, uno por línea**, sin modificar `numeros` (el autograder comprueba que la lista original siga intacta).
+
+Si ingresas `4, 8, 15, 16, 23, 42, 7, 1`, se imprime primero `1`, luego `7`, luego `42`...
+
+<PythonRunner
+	id="mod4-l5-01-inverso"
+	defaultInputs={`4
+8
+15
+16
+23
+42
+7
+1`}
+	initialCode={`numeros = []
+
+# Lee los 8 números y agrégalos con append
+
+# Muestra los números en orden inverso, sin modificar la lista
+`}
+	tests={[
+		{ inputs: '4\n8\n15\n16\n23\n42\n7\n1', expected: '1\n7\n42\n23\n16\n15\n8\n4' },
+		{ inputs: '1\n2\n3\n4\n5\n6\n7\n8', expected: '8\n7\n6\n5\n4\n3\n2\n1' },
+		{ inputs: '-5\n0\n5\n-5\n0\n5\n9\n9', expected: '9\n9\n5\n0\n-5\n5\n0\n-5' },
+	]}
+	testCode={`assert numeros == [4, 8, 15, 16, 23, 42, 7, 1], "La lista numeros debe conservar el orden original (no uses reverse() ni sort())"`}
+	hint='Recorre por índice hacia atrás: range(len(numeros) - 1, -1, -1). También sirve for x in numeros[::-1], porque el slice crea una copia. Lo que no sirve es numeros.reverse(), que modifica la lista.'
+/>
+
+### 2. Modificación de una lista
+
+Construye una lista con los primeros 10 números naturales positivos (`1` al `10`). Luego reemplaza los elementos que están en **índices pares** (0, 2, 4, ...) por el doble de su valor. Finalmente imprime la lista.
+
+Ojo: se modifican las *posiciones* pares, no los *valores* pares. Este ejercicio no lee datos.
+
+<PythonRunner
+	id="mod4-l5-02-indices-pares"
+	defaultInputs=""
+	initialCode={`lista = []
+`}
+	tests={[
+		{ expected: '[2, 2, 6, 4, 10, 6, 14, 8, 18, 10]' },
+	]}
+	hint='Recorre los índices con range(0, len(lista), 2) y asigna con lista[i] = lista[i] * 2. El primer elemento (índice 0) vale 1 y pasa a valer 2.'
+/>
+
+### 3. Notas superiores al promedio
+
+Lee las notas de 10 estudiantes (decimales, una por línea) y guárdalas en una lista. Calcula el promedio y muestra cuántas notas son **estrictamente superiores** a él y cuáles son:
+
+```
+Promedio: 5.05
+Cantidad superiores: 4
+Notas superiores: [6.0, 5.5, 5.8, 7.0]
+```
+
+Las notas superiores se imprimen en una lista, en el orden en que se ingresaron.
+
+<PythonRunner
+	id="mod4-l5-03-sobre-promedio"
+	defaultInputs={`4.0
+6.0
+5.5
+3.5
+5.8
+4.2
+7.0
+4.5
+5.0
+5.0`}
+	initialCode={`notas = []
+`}
+	tests={[
+		{ inputs: '4.0\n6.0\n5.5\n3.5\n5.8\n4.2\n7.0\n4.5\n5.0\n5.0', expected: 'Promedio: 5.05\nCantidad superiores: 4\nNotas superiores: [6.0, 5.5, 5.8, 7.0]' },
+		{ inputs: '5.0\n5.0\n5.0\n5.0\n5.0\n5.0\n5.0\n5.0\n5.0\n5.0', expected: 'Promedio: 5.00\nCantidad superiores: 0\nNotas superiores: []' },
+		{ inputs: '1.0\n1.0\n1.0\n1.0\n1.0\n1.0\n1.0\n1.0\n1.0\n7.0', expected: 'Promedio: 1.60\nCantidad superiores: 1\nNotas superiores: [7.0]' },
+	]}
+	hint='Necesitas dos recorridos: uno para calcular el promedio (no puedes comparar antes de conocerlo) y otro para filtrar. Guarda las superiores en una segunda lista; la cantidad es len() de esa lista. Con todas iguales, la lista queda vacía: [].'
+/>
+
+### 4. Construcción de una lista
+
+Lee un entero positivo `n` y construye una lista con los primeros `n` múltiplos positivos de 3 que **no** sean múltiplos de 2. Imprime la lista.
+
+Para `n = 5`:
+
+```
+[3, 9, 15, 21, 27]
+```
+
+(No es un range con paso fijo de 3: el 6, el 12, el 18... se saltan.)
+
+<PythonRunner
+	id="mod4-l5-04-multiplos"
+	defaultInputs="5"
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '5', expected: '[3, 9, 15, 21, 27]' },
+		{ inputs: '1', expected: '[3]' },
+		{ inputs: '8', expected: '[3, 9, 15, 21, 27, 33, 39, 45]' },
+		{ inputs: '3', expected: '[3, 9, 15]' },
+	]}
+	hint='No sabes hasta qué número hay que mirar, pero sí cuántos elementos quieres: usa while len(lista) < n. Avanza el candidato de 3 en 3 y agrega solo los impares. (Los múltiplos de 3 impares son 3, 9, 15..., o sea de 6 en 6 desde el 3.)'
+/>
+
+
+## Práctica: Laboratorio 6 (más ciclos con listas)
+
+Ahora los ciclos usan **índices**: para mirar dos listas a la vez, para comparar con los vecinos (`i - 1`, `i + 1`) o para intercambiar posiciones. En varios ejercicios la lista original debe quedar intacta: construye una lista nueva o copia con `lista[:]`.
+
+### 1. Modificación de elementos
+
+Lee un entero `n` y luego `n` enteros (uno por línea) para formar una lista. Construye una versión modificada donde:
+
+- cada número **negativo** se reemplaza por su valor absoluto,
+- cada número **positivo impar** se reemplaza por su doble,
+- los demás (positivos pares y el 0) quedan igual.
+
+Imprime la lista original y la modificada. La original **no** debe cambiar:
+
+```
+Original: [-3, 4, 7, 0, -8, 5, 2]
+Modificada: [3, 4, 14, 0, 8, 10, 2]
+```
+
+Un negativo impar (como −3) solo pasa a su absoluto (3), no se duplica.
+
+<PythonRunner
+	id="mod4-l6-01-modificar"
+	defaultInputs={`7
+-3
+4
+7
+0
+-8
+5
+2`}
+	initialCode={`n = int(input())
+lista = []
+`}
+	tests={[
+		{ inputs: '7\n-3\n4\n7\n0\n-8\n5\n2', expected: 'Original: [-3, 4, 7, 0, -8, 5, 2]\nModificada: [3, 4, 14, 0, 8, 10, 2]' },
+		{ inputs: '1\n-1', expected: 'Original: [-1]\nModificada: [1]' },
+		{ inputs: '4\n2\n4\n6\n0', expected: 'Original: [2, 4, 6, 0]\nModificada: [2, 4, 6, 0]' },
+		{ inputs: '5\n1\n3\n5\n-5\n-4', expected: 'Original: [1, 3, 5, -5, -4]\nModificada: [2, 6, 10, 5, 4]' },
+	]}
+	hint='Construye una lista nueva con append en vez de modificar la original. Con if/elif el orden importa: primero los negativos (así -3 no cae después en la regla de los impares). Si modificas lista[i] = ..., la "Original" también cambia: copia con lista[:] antes.'
+/>
+
+### 2. Procesamiento de dos listas
+
+Lee dos listas de 8 enteros cada una (primero los 8 de la primera lista, luego los 8 de la segunda; uno por línea). Construye una tercera lista donde cada elemento es la diferencia entre los elementos de igual índice, siempre **mayor menos menor** (nunca negativa). Imprime las tres listas:
+
+```
+Lista 1: [5, 2, 9, 1, 7, 3, 8, 4]
+Lista 2: [3, 6, 9, 10, 2, 3, 1, 4]
+Lista 3: [2, 4, 0, 9, 5, 0, 7, 0]
+```
+
+<PythonRunner
+	id="mod4-l6-02-dos-listas"
+	defaultInputs={`5
+2
+9
+1
+7
+3
+8
+4
+3
+6
+9
+10
+2
+3
+1
+4`}
+	initialCode={`lista1 = []
+lista2 = []
+lista3 = []
+`}
+	tests={[
+		{ inputs: '5\n2\n9\n1\n7\n3\n8\n4\n3\n6\n9\n10\n2\n3\n1\n4', expected: 'Lista 1: [5, 2, 9, 1, 7, 3, 8, 4]\nLista 2: [3, 6, 9, 10, 2, 3, 1, 4]\nLista 3: [2, 4, 0, 9, 5, 0, 7, 0]' },
+		{ inputs: '0\n0\n0\n0\n0\n0\n0\n0\n1\n1\n1\n1\n-1\n-1\n-1\n-1', expected: 'Lista 1: [0, 0, 0, 0, 0, 0, 0, 0]\nLista 2: [1, 1, 1, 1, -1, -1, -1, -1]\nLista 3: [1, 1, 1, 1, 1, 1, 1, 1]' },
+		{ inputs: '-5\n10\n-3\n8\n0\n6\n-9\n2\n-7\n12\n-3\n4\n5\n-6\n-1\n2', expected: 'Lista 1: [-5, 10, -3, 8, 0, 6, -9, 2]\nLista 2: [-7, 12, -3, 4, 5, -6, -1, 2]\nLista 3: [2, 2, 0, 4, 5, 12, 8, 0]' },
+	]}
+	hint='Recorre con el índice i para mirar lista1[i] y lista2[i] a la vez. Con un if decides cuál resta a cuál (o usa abs(), pero practica el if). Cuidado con los negativos: -5 vs -7 → la diferencia es 2.'
+/>
+
+### 3. Identificación de cambios de tendencia
+
+Lee 12 enteros (uno por línea) y guárdalos en una lista. Encuentra los elementos que sean **estrictamente mayores que sus dos vecinos inmediatos** (el anterior y el siguiente). El primero y el último no se consideran. Por cada uno, imprime su valor y su índice:
+
+```
+Valor 8 en el índice 1
+Valor 9 en el índice 4
+```
+
+Si no hay ninguno, imprime `No hay elementos que cumplan`.
+
+Por ejemplo, en `[3, 8, 5, 2, 9, 4, 7]` cumplen el `8` (índice 1) y el `9` (índice 4).
+
+<PythonRunner
+	id="mod4-l6-03-picos"
+	defaultInputs={`3
+8
+5
+2
+9
+4
+7
+1
+6
+6
+2
+10`}
+	initialCode={`lista = []
+`}
+	tests={[
+		{ inputs: '3\n8\n5\n2\n9\n4\n7\n1\n6\n6\n2\n10', expected: 'Valor 8 en el índice 1\nValor 9 en el índice 4\nValor 7 en el índice 6' },
+		{ inputs: '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12', expected: 'No hay elementos que cumplan' },
+		{ inputs: '5\n5\n5\n5\n5\n5\n5\n5\n5\n5\n5\n5', expected: 'No hay elementos que cumplan' },
+		{ inputs: '0\n9\n0\n9\n0\n9\n0\n9\n0\n9\n0\n9', expected: 'Valor 9 en el índice 1\nValor 9 en el índice 3\nValor 9 en el índice 5\nValor 9 en el índice 7\nValor 9 en el índice 9' },
+	]}
+	hint='Recorre solo los índices 1 a len(lista) - 2: range(1, len(lista) - 1). Así lista[i - 1] y lista[i + 1] siempre existen. Los empates no cuentan (usa > y no >=).'
+/>
+
+### 4. Intercambio de elementos consecutivos
+
+Lee 10 enteros (uno por línea) y guárdalos en una lista. Construye una versión donde se intercambian las parejas consecutivas: el 1.º con el 2.º, el 3.º con el 4.º, etc. Imprime la lista original y la modificada (la original no debe cambiar):
+
+```
+Original: [3, 8, 5, 2, 9, 1, 4, 6, 7, 0]
+Modificada: [8, 3, 2, 5, 1, 9, 6, 4, 0, 7]
+```
+
+<PythonRunner
+	id="mod4-l6-04-intercambio"
+	defaultInputs={`3
+8
+5
+2
+9
+1
+4
+6
+7
+0`}
+	initialCode={`lista = []
+`}
+	tests={[
+		{ inputs: '3\n8\n5\n2\n9\n1\n4\n6\n7\n0', expected: 'Original: [3, 8, 5, 2, 9, 1, 4, 6, 7, 0]\nModificada: [8, 3, 2, 5, 1, 9, 6, 4, 0, 7]' },
+		{ inputs: '1\n2\n3\n4\n5\n6\n7\n8\n9\n10', expected: 'Original: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nModificada: [2, 1, 4, 3, 6, 5, 8, 7, 10, 9]' },
+		{ inputs: '5\n5\n-1\n-1\n0\n9\n9\n0\n2\n3', expected: 'Original: [5, 5, -1, -1, 0, 9, 9, 0, 2, 3]\nModificada: [5, 5, -1, -1, 9, 0, 0, 9, 3, 2]' },
+	]}
+	hint='Recorre los índices pares con range(0, len(lista) - 1, 2) e intercambia lista[i] con lista[i + 1] (con una variable auxiliar, o con a, b = b, a). Copia primero con lista[:], si no la original también cambia.'
+/>
+

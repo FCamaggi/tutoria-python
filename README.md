@@ -36,6 +36,19 @@ Ejercicio con corrección automática (cada caso compara la salida exacta):
 />
 ```
 
+Con `testCode` se pueden agregar comprobaciones extra (se ejecutan en el mismo espacio de nombres del alumno, con las entradas por defecto). Dispone de `_stdout` (lo que imprimió) y `_source` (el código como texto), útil para exigir o prohibir un tipo de ciclo:
+
+```mdx
+<PythonRunner
+	id="reescribe-con-while"
+	initialCode={`for i in range(3):
+    print(i)`}
+	tests={[{ expected: '0\n1\n2' }]}
+	testCode={`import ast
+assert not any(isinstance(n, ast.For) for n in ast.walk(ast.parse(_source))), "Usa while"`}
+/>
+```
+
 Pregunta de alternativas:
 
 ```mdx

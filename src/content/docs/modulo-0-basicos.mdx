@@ -146,3 +146,395 @@ Lee una cantidad total de minutos e imprime cuántas horas y minutos son, con es
 	]}
 	hint="Las horas son total // 60 y los minutos que sobran son total % 60. Si usas /, obtienes 2.25."
 />
+
+## Práctica: Guía 1 (instrucciones secuenciales)
+
+Estos ejercicios son todos "leer datos → calcular → imprimir". La salida debe ser **exacta**, así que dos recordatorios:
+
+- Lo que viene de `input()` es texto: conviértelo con `int()` o `float()` según corresponda.
+- Para mostrar decimales fijos usa un f-string con formato: `f"{valor:.2f}"` imprime 2 decimales y `f"{valor:.1f}"`, uno. Solo cambia cómo se **muestra**, no el valor.
+
+```python
+promedio = 13 / 3
+print(promedio)             # 4.333333333333333
+print(f"{promedio:.2f}")    # 4.33
+```
+
+<Quiz
+	question="El usuario escribe 3, 6 y 9 (en tres líneas). ¿Qué imprime?"
+	code={`a = float(input())
+b = float(input())
+c = float(input())
+print(a + b + c / 3)`}
+	options={[
+		{ text: '6.0', explanation: 'Ese es el promedio correcto, pero el código no lo calcula: falta el paréntesis. La división se evalúa antes que las sumas.' },
+		{ text: '12.0', correct: true, explanation: 'Por la precedencia, c / 3 se calcula primero (9 / 3 = 3.0) y después se suman a + b + 3.0 = 12.0. Para el promedio hay que escribir (a + b + c) / 3.' },
+		{ text: '18.0', explanation: 'Esa es la suma de los tres, sin dividir. Pero c sí se divide por 3.' },
+	]}
+/>
+
+:::note
+El ejercicio "conversión de minutos a horas y minutos" de la Guía 1 es el de **horas y minutos** que ya resolviste más arriba, así que no se repite.
+:::
+
+### 1. Edad en cinco años
+
+Lee la edad actual de una persona y calcula la edad que tendrá dentro de cinco años. Imprime, por ejemplo:
+
+```
+Dentro de cinco años tendrás 25
+```
+
+<PythonRunner
+	id="mod0-g1-01-edad5"
+	defaultInputs="20"
+	initialCode={`edad = int(input())
+`}
+	tests={[
+		{ inputs: '20', expected: 'Dentro de cinco años tendrás 25' },
+		{ inputs: '0', expected: 'Dentro de cinco años tendrás 5' },
+		{ inputs: '62', expected: 'Dentro de cinco años tendrás 67' },
+	]}
+	hint='Convierte con int() y suma 5 dentro del f-string: f"... {edad + 5}".'
+/>
+
+### 2. Promedio de tres números
+
+Lee tres números (uno por línea, pueden tener decimales) e imprime su promedio con **2 decimales**:
+
+```
+Promedio: 5.00
+```
+
+<PythonRunner
+	id="mod0-g1-02-promedio3"
+	defaultInputs={`4
+5
+6`}
+	initialCode={`a = float(input())
+b = float(input())
+c = float(input())
+`}
+	tests={[
+		{ inputs: '4\n5\n6', expected: 'Promedio: 5.00' },
+		{ inputs: '1\n2\n2', expected: 'Promedio: 1.67' },
+		{ inputs: '7.5\n6.5\n7', expected: 'Promedio: 7.00' },
+	]}
+	hint='La suma necesita paréntesis: (a + b + c) / 3. Sin ellos solo c se divide por 3.'
+/>
+
+### 3. Área y perímetro de un rectángulo
+
+Lee el largo y el ancho de un rectángulo (uno por línea) y calcula su área y su perímetro. Imprime ambos con 2 decimales:
+
+```
+Área: 15.00
+Perímetro: 16.00
+```
+
+<PythonRunner
+	id="mod0-g1-03-rectangulo"
+	defaultInputs={`5
+3`}
+	initialCode={`largo = float(input())
+ancho = float(input())
+`}
+	tests={[
+		{ inputs: '5\n3', expected: 'Área: 15.00\nPerímetro: 16.00' },
+		{ inputs: '2.5\n4', expected: 'Área: 10.00\nPerímetro: 13.00' },
+		{ inputs: '7\n7', expected: 'Área: 49.00\nPerímetro: 28.00' },
+	]}
+	hint='Perímetro = 2 * (largo + ancho). Cuida los paréntesis.'
+/>
+
+### 4. Área de un triángulo
+
+Lee la base y la altura de un triángulo (una por línea) y calcula su área con `Área = (base × altura) / 2`. Imprime con 2 decimales:
+
+```
+Área: 6.00
+```
+
+<PythonRunner
+	id="mod0-g1-04-triangulo"
+	defaultInputs={`4
+3`}
+	initialCode={`base = float(input())
+altura = float(input())
+`}
+	tests={[
+		{ inputs: '4\n3', expected: 'Área: 6.00' },
+		{ inputs: '5.5\n2', expected: 'Área: 5.50' },
+		{ inputs: '10\n10', expected: 'Área: 50.00' },
+	]}
+	hint='Multiplica primero y divide por 2 después: base * altura / 2.'
+/>
+
+### 5. Área y perímetro de un círculo
+
+Lee el radio de un círculo y calcula su área y su perímetro. Usa `3.1416` como valor de π (en Python, el decimal se escribe con punto, no con coma).
+
+- `Área = π × radio²`
+- `Perímetro = 2 × π × radio`
+
+Imprime con 2 decimales:
+
+```
+Área: 78.54
+Perímetro: 31.42
+```
+
+<PythonRunner
+	id="mod0-g1-05-circulo"
+	defaultInputs="5"
+	initialCode={`radio = float(input())
+`}
+	tests={[
+		{ inputs: '5', expected: 'Área: 78.54\nPerímetro: 31.42' },
+		{ inputs: '1', expected: 'Área: 3.14\nPerímetro: 6.28' },
+		{ inputs: '3', expected: 'Área: 28.27\nPerímetro: 18.85' },
+	]}
+	hint='La potencia es **: radio ** 2. Recuerda que ** se evalúa antes que *.'
+/>
+
+### 6. Conversión de horas a minutos
+
+Lee una cantidad entera de horas e imprime a cuántos minutos corresponde:
+
+```
+Minutos: 120
+```
+
+(Este ejercicio es el inverso del de "horas y minutos" de más arriba.)
+
+<PythonRunner
+	id="mod0-g1-06-horas-minutos"
+	defaultInputs="2"
+	initialCode={`horas = int(input())
+`}
+	tests={[
+		{ inputs: '2', expected: 'Minutos: 120' },
+		{ inputs: '0', expected: 'Minutos: 0' },
+		{ inputs: '24', expected: 'Minutos: 1440' },
+	]}
+	hint='Una hora tiene 60 minutos: horas * 60.'
+/>
+
+### 7. Temperatura Celsius a Fahrenheit
+
+Lee una temperatura en grados Celsius y conviértela a Fahrenheit con `F = C × 9 / 5 + 32`. Imprime con 1 decimal:
+
+```
+Fahrenheit: 212.0
+```
+
+<PythonRunner
+	id="mod0-g1-07-celsius"
+	defaultInputs="100"
+	initialCode={`c = float(input())
+`}
+	tests={[
+		{ inputs: '100', expected: 'Fahrenheit: 212.0' },
+		{ inputs: '0', expected: 'Fahrenheit: 32.0' },
+		{ inputs: '-40', expected: 'Fahrenheit: -40.0' },
+		{ inputs: '37', expected: 'Fahrenheit: 98.6' },
+	]}
+	hint='Python respeta la precedencia: primero * y /, después +. No necesitas paréntesis, pero puedes ponerlos para ordenar tus ideas.'
+/>
+
+### 8. Precio con IVA
+
+Lee el precio neto de un producto y calcula el IVA (19%) y el precio final. Imprime ambos con 2 decimales:
+
+```
+IVA: 1900.00
+Precio final: 11900.00
+```
+
+<PythonRunner
+	id="mod0-g1-08-iva"
+	defaultInputs="10000"
+	initialCode={`neto = float(input())
+`}
+	tests={[
+		{ inputs: '10000', expected: 'IVA: 1900.00\nPrecio final: 11900.00' },
+		{ inputs: '2500', expected: 'IVA: 475.00\nPrecio final: 2975.00' },
+		{ inputs: '99990', expected: 'IVA: 18998.10\nPrecio final: 118988.10' },
+	]}
+	hint='El 19% se escribe 0.19. El precio final es neto + iva.'
+/>
+
+### 9. Descuento simple
+
+Lee el precio de un producto y un porcentaje de descuento (uno por línea). Calcula el monto del descuento y el precio final. Imprime con 2 decimales:
+
+```
+Descuento: 2000.00
+Precio final: 8000.00
+```
+
+<PythonRunner
+	id="mod0-g1-09-descuento"
+	defaultInputs={`10000
+20`}
+	initialCode={`precio = float(input())
+porcentaje = float(input())
+`}
+	tests={[
+		{ inputs: '10000\n20', expected: 'Descuento: 2000.00\nPrecio final: 8000.00' },
+		{ inputs: '45990\n15', expected: 'Descuento: 6898.50\nPrecio final: 39091.50' },
+		{ inputs: '8000\n0', expected: 'Descuento: 0.00\nPrecio final: 8000.00' },
+	]}
+	hint='El descuento es precio * porcentaje / 100, y el precio final es precio - descuento.'
+/>
+
+### 10. Compra de tres productos
+
+Lee, para cada uno de tres productos, su precio y la cantidad comprada (en este orden: precio 1, cantidad 1, precio 2, cantidad 2, precio 3, cantidad 3; todos enteros). Imprime el total de cada producto y el total de la compra:
+
+```
+Producto 1: 3000
+Producto 2: 1500
+Producto 3: 4000
+Total: 8500
+```
+
+<PythonRunner
+	id="mod0-g1-10-compra3"
+	defaultInputs={`1000
+3
+500
+3
+2000
+2`}
+	initialCode={`precio1 = int(input())
+cantidad1 = int(input())
+precio2 = int(input())
+cantidad2 = int(input())
+precio3 = int(input())
+cantidad3 = int(input())
+`}
+	tests={[
+		{ inputs: '1000\n3\n500\n3\n2000\n2', expected: 'Producto 1: 3000\nProducto 2: 1500\nProducto 3: 4000\nTotal: 8500' },
+		{ inputs: '990\n1\n1200\n0\n250\n8', expected: 'Producto 1: 990\nProducto 2: 0\nProducto 3: 2000\nTotal: 2990' },
+		{ inputs: '1\n1\n1\n1\n1\n1', expected: 'Producto 1: 1\nProducto 2: 1\nProducto 3: 1\nTotal: 3' },
+	]}
+	hint='Guarda cada total en su propia variable: así puedes imprimirlo y también sumarlo al final.'
+/>
+
+### 11. Sueldo según horas trabajadas
+
+Lee las horas trabajadas y el valor pagado por hora (ambos enteros, uno por línea). Imprime el sueldo:
+
+```
+Sueldo: 400000
+```
+
+(Las horas extra llegan en el módulo siguiente, con `if`.)
+
+<PythonRunner
+	id="mod0-g1-11-sueldo"
+	defaultInputs={`40
+10000`}
+	initialCode={`horas = int(input())
+valor_hora = int(input())
+`}
+	tests={[
+		{ inputs: '40\n10000', expected: 'Sueldo: 400000' },
+		{ inputs: '0\n5000', expected: 'Sueldo: 0' },
+		{ inputs: '25\n7200', expected: 'Sueldo: 180000' },
+	]}
+	hint='Sueldo = horas * valor_hora.'
+/>
+
+### 12. Consumo de combustible
+
+Lee los kilómetros recorridos y los litros de combustible usados (uno por línea). Calcula cuántos kilómetros recorrió por litro. Imprime con 2 decimales:
+
+```
+Rendimiento: 12.50 km/l
+```
+
+<PythonRunner
+	id="mod0-g1-12-combustible"
+	defaultInputs={`500
+40`}
+	initialCode={`km = float(input())
+litros = float(input())
+`}
+	tests={[
+		{ inputs: '500\n40', expected: 'Rendimiento: 12.50 km/l' },
+		{ inputs: '320\n25', expected: 'Rendimiento: 12.80 km/l' },
+		{ inputs: '100\n8', expected: 'Rendimiento: 12.50 km/l' },
+	]}
+	hint='Kilómetros por litro = km / litros.'
+/>
+
+### 13. Velocidad promedio
+
+Lee la distancia recorrida y el tiempo empleado (uno por línea). Calcula `Velocidad promedio = distancia / tiempo`. Imprime con 2 decimales:
+
+```
+Velocidad: 80.00
+```
+
+<PythonRunner
+	id="mod0-g1-13-velocidad"
+	defaultInputs={`240
+3`}
+	initialCode={`distancia = float(input())
+tiempo = float(input())
+`}
+	tests={[
+		{ inputs: '240\n3', expected: 'Velocidad: 80.00' },
+		{ inputs: '100\n1.5', expected: 'Velocidad: 66.67' },
+		{ inputs: '50\n3', expected: 'Velocidad: 16.67' },
+	]}
+	hint='Es una sola división: distancia / tiempo.'
+/>
+
+### 14. Índice de masa corporal
+
+Lee el peso en kilogramos y la estatura en metros (uno por línea). Calcula `IMC = peso / estatura²` e imprime con 2 decimales:
+
+```
+IMC: 22.86
+```
+
+<PythonRunner
+	id="mod0-g1-14-imc"
+	defaultInputs={`70
+1.75`}
+	initialCode={`peso = float(input())
+estatura = float(input())
+`}
+	tests={[
+		{ inputs: '70\n1.75', expected: 'IMC: 22.86' },
+		{ inputs: '50\n1.60', expected: 'IMC: 19.53' },
+		{ inputs: '95.5\n1.82', expected: 'IMC: 28.83' },
+	]}
+	hint='peso / estatura ** 2 funciona sin paréntesis porque ** se evalúa antes que /. En cambio, peso / estatura * estatura no es lo mismo.'
+/>
+
+### 15. Cambio de moneda
+
+Lee una cantidad de dinero en pesos y el valor de una unidad de moneda extranjera en pesos (uno por línea). Calcula cuántas unidades de esa moneda se pueden obtener. Imprime con 2 decimales:
+
+```
+Unidades: 105.26
+```
+
+<PythonRunner
+	id="mod0-g1-15-moneda"
+	defaultInputs={`100000
+950`}
+	initialCode={`pesos = float(input())
+valor = float(input())
+`}
+	tests={[
+		{ inputs: '100000\n950', expected: 'Unidades: 105.26' },
+		{ inputs: '50000\n1000', expected: 'Unidades: 50.00' },
+		{ inputs: '75300\n910.5', expected: 'Unidades: 82.70' },
+	]}
+	hint='Si cada unidad cuesta `valor` pesos, caben pesos / valor unidades.'
+/>

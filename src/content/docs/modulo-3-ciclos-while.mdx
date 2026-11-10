@@ -174,3 +174,289 @@ Lee un entero `n > 0` e imprime sus dígitos al revés **como número**. Por eje
 	]}
 	hint="Construye el resultado con invertido = invertido * 10 + n % 10, y quita el último dígito con n //= 10."
 />
+
+## Práctica: Laboratorio 3, ejercicio 4 (validación con while dentro de for)
+
+Este ejercicio retoma el análisis de temperaturas del módulo 2. Usa lo que ya viste: el `for` repite **por cada día** (sabes cuántos días son) y el `while` repite **hasta que el dato sea válido** (no sabes cuántos intentos serán).
+
+### 4. Validación de datos (temperaturas)
+
+Modifica el ejercicio de temperaturas del módulo anterior para **no aceptar** temperaturas menores a −50 ni mayores a 60 (ambos extremos sí son válidos). Cuando el valor esté fuera del rango, imprime `Temperatura inválida` y vuelve a pedir **la temperatura del mismo día**.
+
+Lee `n` y luego los valores; el resultado final tiene el mismo formato que antes:
+
+```
+Promedio: 7.50
+Máxima: 20.00
+Mínima: -10.00
+Días bajo cero: 1
+```
+
+Observa que necesitas **un `for` por día** y, dentro, **un `while` que repita la lectura mientras el valor sea inválido**.
+
+<PythonRunner
+	id="mod3-l3-04-validacion"
+	defaultInputs={`3
+20
+100
+15
+-60
+-10`}
+	initialCode={`n = int(input())
+`}
+	tests={[
+		{ inputs: '3\n20\n100\n15\n-60\n-10', expected: 'Temperatura inválida\nTemperatura inválida\nPromedio: 8.33\nMáxima: 20.00\nMínima: -10.00\nDías bajo cero: 1' },
+		{ inputs: '2\n60\n-50', expected: 'Promedio: 5.00\nMáxima: 60.00\nMínima: -50.00\nDías bajo cero: 1' },
+		{ inputs: '2\n61\n-51\n0\n0', expected: 'Temperatura inválida\nTemperatura inválida\nPromedio: 0.00\nMáxima: 0.00\nMínima: 0.00\nDías bajo cero: 0' },
+		{ inputs: '1\n-100\n-99\n5', expected: 'Temperatura inválida\nTemperatura inválida\nPromedio: 5.00\nMáxima: 5.00\nMínima: 5.00\nDías bajo cero: 0' },
+	]}
+	hint='El patrón es el de "validar la entrada": lee una vez antes del while y vuelve a leer dentro. La condición del while describe cuándo seguir pidiendo: t < -50 or t > 60. No avances al siguiente día hasta salir del while.'
+/>
+
+
+## Práctica: Laboratorio 4 (de for a while y de while a for)
+
+Todo `for` sobre `range` se puede escribir como `while`, y viceversa (siempre que el `while` cuente de a pasos fijos). Los tres elementos del ciclo no desaparecen, solo cambian de lugar:
+
+| | `for` | `while` |
+| --- | --- | --- |
+| Inicio | dentro de `range(inicio, ...)` | línea **antes** del ciclo: `i = inicio` |
+| Condición | el límite de `range` (**no incluido**) | `while i < fin` (o `<=`) |
+| Paso | el tercer valor de `range` | línea **al final** del cuerpo: `i = i + paso` |
+
+```python
+for i in range(2, 9, 3):      # 2, 5, 8
+    print(i)
+
+i = 2                         # inicio
+while i < 9:                  # condición: el límite no se incluye
+    print(i)
+    i = i + 3                 # paso (siempre al final)
+```
+
+<PythonTutor code={`
+i = 2
+suma = 0
+while i < 9:
+    suma = suma + i
+    i = i + 3
+print(suma)
+`} />
+
+<Quiz
+	question="Se quiere reescribir este for como while. ¿Qué condición va donde está ???"
+	code={`for i in range(2, 8, 3):
+    print(i)
+
+# Versión while:
+i = 2
+while ???:
+    print(i)
+    i += 3`}
+	options={[
+		{ text: 'i <= 8', explanation: 'Con i = 8 la condición sigue siendo cierta y el while imprime un 8 de más: el for solo imprime 2 y 5, porque el límite de range (8) no se incluye.' },
+		{ text: 'i < 8', correct: true, explanation: 'El límite de range no se incluye, así que la condición usa < (no <=). Imprime 2 y 5, igual que el for.' },
+		{ text: 'i < 11', explanation: 'Con este límite el while también imprime el 8 (2, 5, 8). Ojo: el límite del while es el mismo número que el de range, no uno mayor.' },
+	]}
+/>
+
+Cada ejercicio de abajo parte del código original, que **debes transformar**. El autograder revisa dos cosas: que el programa imprima lo mismo y que realmente uses (o evites) el tipo de ciclo que pide el enunciado.
+
+### 1. De for a while
+
+Reescribe este programa usando `while` (y **ningún** `for`), sin cambiar lo que imprime. Se corrige comparando salidas y revisando que no quede ningún `for`.
+
+```python
+n = int(input("Ingrese n: "))
+suma = 0
+cantidad = 0
+
+for i in range(2, n + 1, 2):
+    if i % 3 == 0:
+        suma = suma + i
+        cantidad = cantidad + 1
+
+print("Cantidad:", cantidad)
+print("Suma:", suma)
+```
+
+<PythonRunner
+	id="mod3-l4-01-for-a-while"
+	defaultInputs="20"
+	initialCode={`n = int(input("Ingrese n: "))
+suma = 0
+cantidad = 0
+
+for i in range(2, n + 1, 2):
+    if i % 3 == 0:
+        suma = suma + i
+        cantidad = cantidad + 1
+
+print("Cantidad:", cantidad)
+print("Suma:", suma)
+`}
+	tests={[
+		{ inputs: '20', expected: 'Cantidad: 3\nSuma: 36' },
+		{ inputs: '5', expected: 'Cantidad: 0\nSuma: 0' },
+		{ inputs: '6', expected: 'Cantidad: 1\nSuma: 6' },
+		{ inputs: '1', expected: 'Cantidad: 0\nSuma: 0' },
+		{ inputs: '36', expected: 'Cantidad: 6\nSuma: 126' },
+	]}
+	testCode={`import ast
+_arbol = ast.parse(_source)
+_for = [n for n in ast.walk(_arbol) if isinstance(n, ast.For)]
+_while = [n for n in ast.walk(_arbol) if isinstance(n, ast.While)]
+assert not _for, "Este ejercicio pide usar solo while: quita los for"
+assert len(_while) >= 1, "Debes escribir un ciclo while"`}
+	hint='Un for sobre range tiene tres partes: inicio (i = 2), condición (i <= n, porque n + 1 no se incluye) y paso (i = i + 2). El paso va al final del while, fuera del if.'
+/>
+
+### 2. De while a for
+
+Reescribe este programa usando `for` (y **ningún** `while`), conservando su comportamiento. Pon atención a lo que pasa cuando `n` es par.
+
+```python
+n = int(input("Ingrese n: "))
+numero = n
+suma = 0
+
+while numero > 0:
+    if numero % 2 != 0:
+        suma = suma + numero * numero
+    numero = numero - 2
+
+print("Resultado:", suma)
+```
+
+<PythonRunner
+	id="mod3-l4-02-while-a-for"
+	defaultInputs="5"
+	initialCode={`n = int(input("Ingrese n: "))
+numero = n
+suma = 0
+
+while numero > 0:
+    if numero % 2 != 0:
+        suma = suma + numero * numero
+    numero = numero - 2
+
+print("Resultado:", suma)
+`}
+	tests={[
+		{ inputs: '5', expected: 'Resultado: 35' },
+		{ inputs: '6', expected: 'Resultado: 0' },
+		{ inputs: '1', expected: 'Resultado: 1' },
+		{ inputs: '0', expected: 'Resultado: 0' },
+		{ inputs: '9', expected: 'Resultado: 165' },
+	]}
+	testCode={`import ast
+_arbol = ast.parse(_source)
+_for = [n for n in ast.walk(_arbol) if isinstance(n, ast.For)]
+_while = [n for n in ast.walk(_arbol) if isinstance(n, ast.While)]
+assert not _while, "Este ejercicio pide usar solo for: quita los while"
+assert len(_for) >= 1, "Debes escribir un ciclo for"`}
+	hint='El while parte en n y baja de 2 en 2: eso es range(n, 0, -2). Mantén el if: si n es par, todos los valores son pares y el resultado es 0 (no "simplifiques" el ciclo para recorrer impares).'
+/>
+
+### 3. Bucles anidados: solo while
+
+Reescribe este programa usando **exclusivamente `while`** (dos ciclos anidados), sin cambiar su resultado.
+
+```python
+n = int(input("Ingrese n: "))
+
+for i in range(1, n + 1):
+    suma = 0
+
+    for j in range(1, i + 1):
+        suma = suma + j
+
+    print(i, suma)
+```
+
+<PythonRunner
+	id="mod3-l4-03-anidados-while"
+	defaultInputs="4"
+	initialCode={`n = int(input("Ingrese n: "))
+
+for i in range(1, n + 1):
+    suma = 0
+
+    for j in range(1, i + 1):
+        suma = suma + j
+
+    print(i, suma)
+`}
+	tests={[
+		{ inputs: '4', expected: '1 1\n2 3\n3 6\n4 10' },
+		{ inputs: '1', expected: '1 1' },
+		{ inputs: '6', expected: '1 1\n2 3\n3 6\n4 10\n5 15\n6 21' },
+		{ inputs: '0', expected: '' },
+	]}
+	testCode={`import ast
+_arbol = ast.parse(_source)
+_for = [n for n in ast.walk(_arbol) if isinstance(n, ast.For)]
+_while = [n for n in ast.walk(_arbol) if isinstance(n, ast.While)]
+assert not _for, "Este ejercicio pide usar solo while: quita los for"
+assert len(_while) >= 2, "Debes escribir dos ciclos while (uno dentro del otro)"`}
+	hint='Cada for se convierte en su propio while con su propia variable inicializada ANTES y su paso al FINAL. El j = 1 va dentro del while de afuera: si queda afuera, j no se reinicia en cada fila.'
+/>
+
+### 4. Bucles anidados: solo for
+
+Reescribe este programa usando **exclusivamente `for`** (dos ciclos anidados), conservando su comportamiento.
+
+```python
+n = int(input("Ingrese n: "))
+fila = 1
+
+while fila <= n:
+    columna = n
+
+    while columna >= fila:
+        print(columna, end=" ")
+        columna = columna - 1
+
+    print()
+    fila = fila + 1
+```
+
+Para `n = 4` imprime:
+
+```
+4 3 2 1
+4 3 2
+4 3
+4
+```
+
+<PythonRunner
+	id="mod3-l4-04-anidados-for"
+	defaultInputs="4"
+	initialCode={`n = int(input("Ingrese n: "))
+fila = 1
+
+while fila <= n:
+    columna = n
+
+    while columna >= fila:
+        print(columna, end=" ")
+        columna = columna - 1
+
+    print()
+    fila = fila + 1
+`}
+	tests={[
+		{ inputs: '4', expected: '4 3 2 1\n4 3 2\n4 3\n4' },
+		{ inputs: '1', expected: '1' },
+		{ inputs: '3', expected: '3 2 1\n3 2\n3' },
+		{ inputs: '5', expected: '5 4 3 2 1\n5 4 3 2\n5 4 3\n5 4\n5' },
+	]}
+	testCode={`import ast
+_arbol = ast.parse(_source)
+_for = [n for n in ast.walk(_arbol) if isinstance(n, ast.For)]
+_while = [n for n in ast.walk(_arbol) if isinstance(n, ast.While)]
+assert not _while, "Este ejercicio pide usar solo for: quita los while"
+assert len(_for) >= 2, "Debes escribir dos ciclos for (uno dentro del otro)"`}
+	hint='El ciclo de afuera es range(1, n + 1). El de adentro baja desde n hasta fila INCLUIDA: range(n, fila - 1, -1). El print() vacío va dentro del for de afuera, después del for de adentro.'
+/>
